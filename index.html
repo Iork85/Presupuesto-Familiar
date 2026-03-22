@@ -206,10 +206,7 @@ function defaultState() {
 
 function scheduleSave(skipRender) {
   dot().className = "sync-dot saving";
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => {
-    set(ref(db, "presupuesto"), state).then(()=>{ dot().className="sync-dot ok"; });
-  }, 800);
+  set(ref(db, "presupuesto"), state).then(()=>{ dot().className="sync-dot ok"; });
   if(!skipRender) render();
 }
 
@@ -252,9 +249,9 @@ function renderIngresos(){
   return `<div class="card">
     <div class="card-title">Ingresos del mes</div>
     <label>Agus 💙</label>
-    <div class="input-wrap"><span class="pre">$</span><input class="pl" type="number" placeholder="0" value="${state.incAgus}" oninput="state.incAgus=this.value;scheduleSave(true)" onchange="render()"></div>
+    <div class="input-wrap"><span class="pre">$</span><input class="pl" type="number" placeholder="0" value="${state.incAgus}" oninput="state.incAgus=this.value" onblur="scheduleSave()" onkeydown="if(event.key==='Enter'){scheduleSave();this.blur()}"></div>
     <label>Coki 💚</label>
-    <div class="input-wrap"><span class="pre">$</span><input class="pl" type="number" placeholder="0" value="${state.incCoki}" oninput="state.incCoki=this.value;scheduleSave(true)" onchange="render()"></div>
+    <div class="input-wrap"><span class="pre">$</span><input class="pl" type="number" placeholder="0" value="${state.incCoki}" oninput="state.incCoki=this.value" onblur="scheduleSave()" onkeydown="if(event.key==='Enter'){scheduleSave();this.blur()}"></div>
   </div>
   <div class="card">
     <div class="row-between"><span>Ingreso total</span><span style="color:#10B981;font-size:16px;font-weight:700">${fmt(totalIncome())}</span></div>
@@ -268,7 +265,7 @@ function renderFijos(){
   const rows=(state.fixedList||[]).map((k,i)=>`
     <div class="fixed-row">
       <span class="name">${k}</span>
-      <input type="number" placeholder="0" value="${(state.fixed||{})[k]||''}" oninput="state.fixed['${k}']=this.value;scheduleSave(true)" onchange="render()">
+      <input type="number" placeholder="0" value="${(state.fixed||{})[k]||''}" oninput="state.fixed['${k}']=this.value" onblur="scheduleSave()" onkeydown="if(event.key==='Enter'){scheduleSave();this.blur()}">
       <button class="btn-remove" onclick="removeFixed(${i})">✕</button>
     </div>`).join("");
   return `<div class="card">
@@ -303,8 +300,8 @@ function renderVariable(){
   const personBlock=(p,color)=>{
     const rows=((state.varRows[state.activeWeek]||{})[p]||[]).map((r,i)=>`
       <div class="var-row">
-        <input type="text" placeholder="Concepto" value="${r.desc}" oninput="state.varRows['${state.activeWeek}']['${p}'][${i}].desc=this.value;scheduleSave(true)">
-        <div class="amt-wrap"><span>$</span><input type="number" placeholder="0" value="${r.amt}" oninput="state.varRows['${state.activeWeek}']['${p}'][${i}].amt=this.value;scheduleSave(true)" onchange="render()"></div>
+        <input type="text" placeholder="Concepto" value="${r.desc}" oninput="state.varRows['${state.activeWeek}']['${p}'][${i}].desc=this.value" onblur="scheduleSave()" onkeydown="if(event.key==='Enter'){scheduleSave();this.blur()}">
+        <div class="amt-wrap"><span>$</span><input type="number" placeholder="0" value="${r.amt}" oninput="state.varRows['${state.activeWeek}']['${p}'][${i}].amt=this.value" onblur="scheduleSave()" onkeydown="if(event.key==='Enter'){scheduleSave();this.blur()}"></div>
         ${state.varRows[state.activeWeek][p].length>1?`<button class="btn-remove" onclick="removeRow('${state.activeWeek}','${p}',${i})">✕</button>`:""}
       </div>`).join("");
     return `<div class="card">
