@@ -123,7 +123,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBXV6VmVLgvcBikKOq534n_JdVaq7_oJZI",
@@ -140,12 +140,20 @@ const db = getDatabase(app);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-// Manejar resultado del redirect
-getRedirectResult(auth).catch(e => console.log("redirect error", e));
+// Manejar resultado del redirect al volver
+getRedirectResult(auth).then(result => {
+  if(result?.user) console.log("Login via redirect OK");
+}).catch(e => console.log("redirect error", e));
 
 window.loginGoogle = async () => {
   try {
-    await signInWithRedirect(auth, provider);
+    // Usar popup en desktop, redirect en mobile
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if(isMobile){
+      await signInWithRedirect(auth, provider);
+    } else {
+      await signInWithPopup(auth, provider);
+    }
   } catch(e) {
     document.getElementById("login-error").textContent = "Error al iniciar sesión. Intentá de nuevo.";
   }
