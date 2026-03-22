@@ -83,39 +83,39 @@ input[type=number],input[type=text]{width:100%;padding:9px 10px;border-radius:8p
 <body>
 
 <div id="login-screen">
-<div class="login-card">
-<div style="font-size:48px;margin-bottom:12px">💰</div>
-<h1>Presupuesto</h1>
-<p>Agus & Coki — Control familiar</p>
-<button class="btn-google" onclick="loginGoogle()">
-<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"/>
-Entrar con Google
-</button>
-<div class="login-error" id="login-error"></div>
-</div>
+  <div class="login-card">
+    <div style="font-size:48px;margin-bottom:12px">💰</div>
+    <h1>Presupuesto</h1>
+    <p>Agus & Coki — Control familiar</p>
+    <button class="btn-google" onclick="loginGoogle()">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"/>
+      Entrar con Google
+    </button>
+    <div class="login-error" id="login-error"></div>
+  </div>
 </div>
 
 <div id="app-screen">
-<div class="header">
-<h1>💰 Presupuesto Familiar</h1>
-<div class="header-selects">
-<select id="sel-month"></select>
-<select id="sel-year"></select>
-<div class="sync-dot ok" id="sync-dot"></div>
-<button class="btn-logout" onclick="logout()">Salir</button>
-</div>
-<div class="user-info">
-<img class="user-avatar" id="user-avatar" src=""/>
-<span class="user-name" id="user-name"></span>
-</div>
-</div>
-<div class="tabs">
-<button class="tab active" onclick="setTab('ingresos')">👥 Ingresos</button>
-<button class="tab" onclick="setTab('fijos')">📋 Fijos</button>
-<button class="tab" onclick="setTab('variable')">🛒 Semanas</button>
-<button class="tab" onclick="setTab('resumen')">📊 Resumen</button>
-</div>
-<div class="content" id="main-content"></div>
+  <div class="header">
+    <h1>💰 Presupuesto Familiar</h1>
+    <div class="header-selects">
+      <select id="sel-month"></select>
+      <select id="sel-year"></select>
+      <div class="sync-dot ok" id="sync-dot"></div>
+      <button class="btn-logout" onclick="logout()">Salir</button>
+    </div>
+    <div class="user-info">
+      <img class="user-avatar" id="user-avatar" src=""/>
+      <span class="user-name" id="user-name"></span>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="setTab('ingresos')">👥 Ingresos</button>
+    <button class="tab" onclick="setTab('fijos')">📋 Fijos</button>
+    <button class="tab" onclick="setTab('variable')">🛒 Semanas</button>
+    <button class="tab" onclick="setTab('resumen')">📊 Resumen</button>
+  </div>
+  <div class="content" id="main-content"></div>
 </div>
 
 <div class="saved-toast" id="toast">✅ Guardado</div>
@@ -124,16 +124,15 @@ Entrar con Google
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
-apiKey: "AIzaSyBXV6VmVLgvcBikKOq534n_JdVaq7_oJZI",
-authDomain: "presupuesto-familiar-32085.firebaseapp.com",
-databaseURL: "https://presupuesto-familiar-32085-default-rtdb.firebaseio.com",
-projectId: "presupuesto-familiar-32085",
-storageBucket: "presupuesto-familiar-32085.firebasestorage.app",
-messagingSenderId: "243481818423",
-appId: "1:243481818423:web:14764e473e6c26729856b2"
+  apiKey: "AIzaSyBXV6VmVLgvcBikKOq534n_JdVaq7_oJZI",
+  authDomain: "presupuesto-familiar-32085.firebaseapp.com",
+  databaseURL: "https://presupuesto-familiar-32085-default-rtdb.firebaseio.com",
+  projectId: "presupuesto-familiar-32085",
+  storageBucket: "presupuesto-familiar-32085.firebasestorage.app",
+  messagingSenderId: "243481818423",
+  appId: "1:243481818423:web:14764e473e6c26729856b2"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -141,39 +140,35 @@ const db = getDatabase(app);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-// Manejar resultado del redirect
-getRedirectResult(auth).catch(e => console.log("redirect error", e));
-
 window.loginGoogle = async () => {
-try {
+  try {
     await signInWithPopup(auth, provider);
-    await signInWithRedirect(auth, provider);
-} catch(e) {
-document.getElementById("login-error").textContent = "Error al iniciar sesión. Intentá de nuevo.";
-}
+  } catch(e) {
+    document.getElementById("login-error").textContent = "Error al iniciar sesión. Intentá de nuevo.";
+  }
 };
 window.logout = () => signOut(auth);
 
 onAuthStateChanged(auth, user => {
-if(user){
-document.getElementById("login-screen").style.display = "none";
-document.getElementById("app-screen").style.display = "block";
-document.getElementById("user-name").textContent = user.displayName || user.email;
-document.getElementById("user-avatar").src = user.photoURL || "";
-initApp();
-} else {
-document.getElementById("login-screen").style.display = "flex";
-document.getElementById("app-screen").style.display = "none";
-}
+  if(user){
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("app-screen").style.display = "block";
+    document.getElementById("user-name").textContent = user.displayName || user.email;
+    document.getElementById("user-avatar").src = user.photoURL || "";
+    initApp();
+  } else {
+    document.getElementById("login-screen").style.display = "flex";
+    document.getElementById("app-screen").style.display = "none";
+  }
 });
 
 const MONTHS = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 const WEEKS = ["Semana 1","Semana 2","Semana 3","Semana 4"];
 const DEFAULT_FIXED = [
-"Tarjeta Visa","Crédito hipotecario","Luz","Gas","Impuestos","Internet",
-"Colegio","Gimnasio","Jardinero","Psicóloga Agus","Psicólogo Coki",
-"Danza","Inglés","Yoga","Nafta","Ahorro mensual","Gastos propios Agus",
-"Gastos propios Coki","Mensualidad Feli","Gastos chicos"
+  "Tarjeta Visa","Crédito hipotecario","Luz","Gas","Impuestos","Internet",
+  "Colegio","Gimnasio","Jardinero","Psicóloga Agus","Psicólogo Coki",
+  "Danza","Inglés","Yoga","Nafta","Ahorro mensual","Gastos propios Agus",
+  "Gastos propios Coki","Mensualidad Feli","Gastos chicos"
 ];
 
 const today = new Date();
@@ -181,58 +176,53 @@ let state = null;
 let listening = false;
 
 function defaultState(){
-const rows={};
-WEEKS.forEach(w=>{rows[w]={Agus:[{desc:"",amt:""}],Coki:[{desc:"",amt:""}]};});
-return {
-month:today.getMonth(), year:today.getFullYear(),
-incAgus:"", incCoki:"",
-fixedList:[...DEFAULT_FIXED],
-fixed:Object.fromEntries(DEFAULT_FIXED.map(k=>[k,""])),
-varRows:rows, activeWeek:"Semana 1", tab:"ingresos"
-};
+  const rows={};
+  WEEKS.forEach(w=>{rows[w]={Agus:[{desc:"",amt:""}],Coki:[{desc:"",amt:""}]};});
+  return {
+    month:today.getMonth(), year:today.getFullYear(),
+    incAgus:"", incCoki:"",
+    fixedList:[...DEFAULT_FIXED],
+    fixed:Object.fromEntries(DEFAULT_FIXED.map(k=>[k,""])),
+    varRows:rows, activeWeek:"Semana 1", tab:"ingresos"
+  };
 }
 
 function showToast(){
-const t=document.getElementById("toast");
-t.classList.add("show");
-setTimeout(()=>t.classList.remove("show"),2000);
+  const t=document.getElementById("toast");
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),2000);
 }
 
 function doSave(){
-document.getElementById("sync-dot").className="sync-dot saving";
-// Leer valores actuales del DOM antes de guardar
-readDOMIntoState();
-set(ref(db,"presupuesto"), state).then(()=>{
-document.getElementById("sync-dot").className="sync-dot ok";
-showToast();
-render();
-});
+  document.getElementById("sync-dot").className="sync-dot saving";
+  readDOMIntoState();
+  set(ref(db,"presupuesto"), state).then(()=>{
+    document.getElementById("sync-dot").className="sync-dot ok";
+    showToast();
+    render();
+  });
 }
 
 function readDOMIntoState(){
-// Ingresos
-const ia = document.getElementById("inp-agus");
-const ic = document.getElementById("inp-coki");
-if(ia) state.incAgus = ia.value;
-if(ic) state.incCoki = ic.value;
-// Fijos
-(state.fixedList||[]).forEach((k,i)=>{
-const el = document.getElementById("fixed-"+i);
-if(el) state.fixed[k] = el.value;
-});
-// Variables
-const w = state.activeWeek;
-["Agus","Coki"].forEach(p=>{
-(state.varRows[w][p]||[]).forEach((r,i)=>{
-const desc = document.getElementById(`vdesc-${p}-${i}`);
-const amt = document.getElementById(`vamt-${p}-${i}`);
-if(desc) state.varRows[w][p][i].desc = desc.value;
-if(amt) state.varRows[w][p][i].amt = amt.value;
-});
-});
-// Mes/año
-state.month = +document.getElementById("sel-month").value;
-state.year = +document.getElementById("sel-year").value;
+  const ia=document.getElementById("inp-agus");
+  const ic=document.getElementById("inp-coki");
+  if(ia) state.incAgus=ia.value;
+  if(ic) state.incCoki=ic.value;
+  (state.fixedList||[]).forEach((k,i)=>{
+    const el=document.getElementById("fixed-"+i);
+    if(el) state.fixed[k]=el.value;
+  });
+  const w=state.activeWeek;
+  ["Agus","Coki"].forEach(p=>{
+    (state.varRows[w][p]||[]).forEach((r,i)=>{
+      const desc=document.getElementById(`vdesc-${p}-${i}`);
+      const amt=document.getElementById(`vamt-${p}-${i}`);
+      if(desc) state.varRows[w][p][i].desc=desc.value;
+      if(amt) state.varRows[w][p][i].amt=amt.value;
+    });
+  });
+  state.month=+document.getElementById("sel-month").value;
+  state.year=+document.getElementById("sel-year").value;
 }
 
 function num(v){return parseFloat(v)||0;}
@@ -252,157 +242,156 @@ const sy=document.getElementById("sel-year");
 MONTHS.forEach((m,i)=>{const o=document.createElement("option");o.value=i;o.textContent=m;sm.appendChild(o);});
 [2024,2025,2026,2027].forEach(y=>{const o=document.createElement("option");o.value=y;o.textContent=y;sy.appendChild(o);});
 
-window.setTab = t=>{ readDOMIntoState(); state.tab=t; render(); };
-window.setWeek = w=>{ readDOMIntoState(); state.activeWeek=w; render(); };
-window.doSave = doSave;
-
-window.addFixed = ()=>{
-readDOMIntoState();
-const inp=document.getElementById("new-fixed-name");
-const name=inp.value.trim();
-if(!name) return;
-state.fixedList.push(name);
-state.fixed[name]="";
-doSave();
+window.setTab=t=>{readDOMIntoState();state.tab=t;render();};
+window.setWeek=w=>{readDOMIntoState();state.activeWeek=w;render();};
+window.doSave=doSave;
+window.addFixed=()=>{
+  readDOMIntoState();
+  const inp=document.getElementById("new-fixed-name");
+  const name=inp.value.trim();
+  if(!name) return;
+  state.fixedList.push(name);
+  state.fixed[name]="";
+  doSave();
 };
-window.removeFixed = i=>{
-readDOMIntoState();
-const name=state.fixedList[i];
-state.fixedList.splice(i,1);
-delete state.fixed[name];
-doSave();
+window.removeFixed=i=>{
+  readDOMIntoState();
+  const name=state.fixedList[i];
+  state.fixedList.splice(i,1);
+  delete state.fixed[name];
+  doSave();
 };
-window.addRow = (w,p)=>{
-readDOMIntoState();
-state.varRows[w][p].push({desc:"",amt:""});
-doSave();
+window.addRow=(w,p)=>{
+  readDOMIntoState();
+  state.varRows[w][p].push({desc:"",amt:""});
+  doSave();
 };
-window.removeRow = (w,p,i)=>{
-readDOMIntoState();
-state.varRows[w][p].splice(i,1);
-if(!state.varRows[w][p].length) state.varRows[w][p]=[{desc:"",amt:""}];
-doSave();
+window.removeRow=(w,p,i)=>{
+  readDOMIntoState();
+  state.varRows[w][p].splice(i,1);
+  if(!state.varRows[w][p].length) state.varRows[w][p]=[{desc:"",amt:""}];
+  doSave();
 };
 
 function render(){
-if(!state) return;
-sm.value=state.month; sy.value=state.year;
-document.querySelectorAll(".tab").forEach(b=>{
-const map={ingresos:"Ingresos",fijos:"Fijos",variable:"Semanas",resumen:"Resumen"};
-b.classList.toggle("active",b.textContent.includes(map[state.tab]));
-});
-const c=document.getElementById("main-content");
-if(state.tab==="ingresos") c.innerHTML=renderIngresos();
-else if(state.tab==="fijos") c.innerHTML=renderFijos();
-else if(state.tab==="variable") c.innerHTML=renderVariable();
-else c.innerHTML=renderResumen();
+  if(!state) return;
+  sm.value=state.month; sy.value=state.year;
+  document.querySelectorAll(".tab").forEach(b=>{
+    const map={ingresos:"Ingresos",fijos:"Fijos",variable:"Semanas",resumen:"Resumen"};
+    b.classList.toggle("active",b.textContent.includes(map[state.tab]));
+  });
+  const c=document.getElementById("main-content");
+  if(state.tab==="ingresos") c.innerHTML=renderIngresos();
+  else if(state.tab==="fijos") c.innerHTML=renderFijos();
+  else if(state.tab==="variable") c.innerHTML=renderVariable();
+  else c.innerHTML=renderResumen();
 }
 
 function renderIngresos(){
-const disp=disponible(), pd=porDia();
-return `<div class="card">
-   <div class="card-title">Ingresos del mes</div>
-   <label>Agus 💙</label>
-   <div class="input-wrap"><span class="pre">$</span><input id="inp-agus" class="pl" type="number" inputmode="numeric" placeholder="0" value="${state.incAgus}"></div>
-   <label>Coki 💚</label>
-   <div class="input-wrap"><span class="pre">$</span><input id="inp-coki" class="pl" type="number" inputmode="numeric" placeholder="0" value="${state.incCoki}"></div>
-   <button class="btn-save" onclick="doSave()">💾 Guardar</button>
- </div>
- <div class="card">
-   <div class="row-between"><span>Ingreso total</span><span style="color:#10B981;font-size:16px;font-weight:700">${fmt(totalIncome())}</span></div>
-   <div class="row-between"><span>Gastos fijos</span><span style="color:#EF4444;font-weight:600">- ${fmt(totalFixed())}</span></div>
-   <div class="row-between" style="font-weight:800;font-size:15px;border:none;padding-top:10px"><span>Disponible</span><span style="color:${disp>=0?'#10B981':'#EF4444'}">${fmt(disp)}</span></div>
- </div>
- ${pd>0?`<div class="daily-box"><div class="lbl">PRESUPUESTO DIARIO (${diasMes()} días)</div><div class="val">${fmt(pd)}<span style="font-size:14px;font-weight:400">/día</span></div><div class="sub">${fmt(pd*7)} por semana</div></div>`:""}`;
+  const disp=disponible(),pd=porDia();
+  return `<div class="card">
+    <div class="card-title">Ingresos del mes</div>
+    <label>Agus 💙</label>
+    <div class="input-wrap"><span class="pre">$</span><input id="inp-agus" class="pl" type="number" inputmode="numeric" placeholder="0" value="${state.incAgus}"></div>
+    <label>Coki 💚</label>
+    <div class="input-wrap"><span class="pre">$</span><input id="inp-coki" class="pl" type="number" inputmode="numeric" placeholder="0" value="${state.incCoki}"></div>
+    <button class="btn-save" onclick="doSave()">💾 Guardar</button>
+  </div>
+  <div class="card">
+    <div class="row-between"><span>Ingreso total</span><span style="color:#10B981;font-size:16px;font-weight:700">${fmt(totalIncome())}</span></div>
+    <div class="row-between"><span>Gastos fijos</span><span style="color:#EF4444;font-weight:600">- ${fmt(totalFixed())}</span></div>
+    <div class="row-between" style="font-weight:800;font-size:15px;border:none;padding-top:10px"><span>Disponible</span><span style="color:${disp>=0?'#10B981':'#EF4444'}">${fmt(disp)}</span></div>
+  </div>
+  ${pd>0?`<div class="daily-box"><div class="lbl">PRESUPUESTO DIARIO (${diasMes()} días)</div><div class="val">${fmt(pd)}<span style="font-size:14px;font-weight:400">/día</span></div><div class="sub">${fmt(pd*7)} por semana</div></div>`:""}`;
 }
 
 function renderFijos(){
-const rows=(state.fixedList||[]).map((k,i)=>`
-   <div class="fixed-row">
-     <span class="name">${k}</span>
-     <input id="fixed-${i}" type="number" inputmode="numeric" placeholder="0" value="${(state.fixed||{})[k]||''}">
-     <button class="btn-remove" onclick="removeFixed(${i})">✕</button>
-   </div>`).join("");
-return `<div class="card">
-   <div class="card-title">Gastos fijos mensuales</div>
-   ${rows}
-   <div class="add-fixed-row">
-     <input type="text" id="new-fixed-name" placeholder="Nuevo ítem">
-     <button class="btn-green" onclick="addFixed()">+ Agregar</button>
-   </div>
-   <button class="btn-save" onclick="doSave()" style="margin-top:14px">💾 Guardar todo</button>
-   <div style="text-align:right;font-weight:800;font-size:15px;margin-top:10px">Total: <span style="color:#EF4444">${fmt(totalFixed())}</span></div>
- </div>`;
+  const rows=(state.fixedList||[]).map((k,i)=>`
+    <div class="fixed-row">
+      <span class="name">${k}</span>
+      <input id="fixed-${i}" type="number" inputmode="numeric" placeholder="0" value="${(state.fixed||{})[k]||''}">
+      <button class="btn-remove" onclick="removeFixed(${i})">✕</button>
+    </div>`).join("");
+  return `<div class="card">
+    <div class="card-title">Gastos fijos mensuales</div>
+    ${rows}
+    <div class="add-fixed-row">
+      <input type="text" id="new-fixed-name" placeholder="Nuevo ítem">
+      <button class="btn-green" onclick="addFixed()">+ Agregar</button>
+    </div>
+    <button class="btn-save" onclick="doSave()" style="margin-top:14px">💾 Guardar todo</button>
+    <div style="text-align:right;font-weight:800;font-size:15px;margin-top:10px">Total: <span style="color:#EF4444">${fmt(totalFixed())}</span></div>
+  </div>`;
 }
 
 function renderVariable(){
-const wt=weekTotal(state.activeWeek), budget=porDia()*7;
-const weekBtns=WEEKS.map(w=>`<button class="week-btn ${w===state.activeWeek?'active':''}" onclick="setWeek('${w}')">${w}</button>`).join("");
-const personBlock=(p,color)=>{
-const rows=((state.varRows[state.activeWeek]||{})[p]||[]).map((r,i)=>`
-     <div class="var-row">
-       <input type="text" id="vdesc-${p}-${i}" placeholder="Concepto" value="${r.desc}">
-       <div class="amt-wrap"><span>$</span><input type="number" id="vamt-${p}-${i}" inputmode="numeric" placeholder="0" value="${r.amt}"></div>
-       ${state.varRows[state.activeWeek][p].length>1?`<button class="btn-remove" onclick="removeRow('${state.activeWeek}','${p}',${i})">✕</button>`:""}
-     </div>`).join("");
-return `<div class="card">
-     <div class="person-title" style="color:${color}">${p==="Agus"?"💙":"💚"} Gastos de ${p}</div>
-     ${rows}
-     <div class="total-row">
-       <button class="btn-add" onclick="addRow('${state.activeWeek}','${p}')">+ Fila</button>
-       <span style="color:${color};font-size:15px">${fmt(weekPersonTotal(state.activeWeek,p))}</span>
-     </div>
-     <button class="btn-save" onclick="doSave()" style="margin-top:10px">💾 Guardar</button>
-   </div>`;
-};
-return `<div class="week-btns">${weekBtns}</div>
- <div class="week-summary">
-   <div><div style="font-size:12px;color:#3B82F6;font-weight:600">PRESUPUESTO SEMANAL</div><div style="font-size:20px;font-weight:900;color:#2563EB">${fmt(budget)}</div></div>
-   <div style="text-align:right"><div style="font-size:12px;color:#64748B">Gastado</div><div style="font-size:18px;font-weight:800;color:${wt>budget?'#EF4444':'#10B981'}">${fmt(wt)}</div></div>
- </div>
- ${personBlock("Agus","#3B82F6")}${personBlock("Coki","#10B981")}`;
+  const wt=weekTotal(state.activeWeek),budget=porDia()*7;
+  const weekBtns=WEEKS.map(w=>`<button class="week-btn ${w===state.activeWeek?'active':''}" onclick="setWeek('${w}')">${w}</button>`).join("");
+  const personBlock=(p,color)=>{
+    const rows=((state.varRows[state.activeWeek]||{})[p]||[]).map((r,i)=>`
+      <div class="var-row">
+        <input type="text" id="vdesc-${p}-${i}" placeholder="Concepto" value="${r.desc}">
+        <div class="amt-wrap"><span>$</span><input type="number" id="vamt-${p}-${i}" inputmode="numeric" placeholder="0" value="${r.amt}"></div>
+        ${state.varRows[state.activeWeek][p].length>1?`<button class="btn-remove" onclick="removeRow('${state.activeWeek}','${p}',${i})">✕</button>`:""}
+      </div>`).join("");
+    return `<div class="card">
+      <div class="person-title" style="color:${color}">${p==="Agus"?"💙":"💚"} Gastos de ${p}</div>
+      ${rows}
+      <div class="total-row">
+        <button class="btn-add" onclick="addRow('${state.activeWeek}','${p}')">+ Fila</button>
+        <span style="color:${color};font-size:15px">${fmt(weekPersonTotal(state.activeWeek,p))}</span>
+      </div>
+      <button class="btn-save" onclick="doSave()" style="margin-top:10px">💾 Guardar</button>
+    </div>`;
+  };
+  return `<div class="week-btns">${weekBtns}</div>
+  <div class="week-summary">
+    <div><div style="font-size:12px;color:#3B82F6;font-weight:600">PRESUPUESTO SEMANAL</div><div style="font-size:20px;font-weight:900;color:#2563EB">${fmt(budget)}</div></div>
+    <div style="text-align:right"><div style="font-size:12px;color:#64748B">Gastado</div><div style="font-size:18px;font-weight:800;color:${wt>budget?'#EF4444':'#10B981'}">${fmt(wt)}</div></div>
+  </div>
+  ${personBlock("Agus","#3B82F6")}${personBlock("Coki","#10B981")}`;
 }
 
 function renderResumen(){
-const saldo=disponible()-totalVar(), tv=totalVar();
-const tva=totalVarPerson("Agus"), tvc=totalVarPerson("Coki");
-const maxW=Math.max(...WEEKS.map(w=>weekTotal(w)),1);
-const barCols=WEEKS.map(w=>{
-const t=weekTotal(w),h=Math.max(Math.round((t/maxW)*70),4);
-return `<div class="bar-col"><div class="bar-col-inner"><div class="bar-col-bar" style="height:${h}px"></div></div>
-   <div style="font-size:11px;color:#64748B;margin-top:3px">${w.replace("Semana","S.")}</div>
-   <div style="font-size:12px;font-weight:700">${fmt(t)}</div></div>`;
-}).join("");
-const personBars=[["Agus 💙",tva,"#3B82F6"],["Coki 💚",tvc,"#10B981"]].map(([lbl,val,color])=>`
-   <div style="margin-bottom:12px">
-     <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
-       <span style="font-weight:600">${lbl}</span><span style="font-weight:700;color:${color}">${fmt(val)}</span>
-     </div>
-     <div class="bar-wrap"><div class="bar" style="width:${tv>0?(val/tv)*100:0}%;background:${color}"></div></div>
-   </div>`).join("");
-const fixedDetail=(state.fixedList||[]).filter(k=>num((state.fixed||{})[k])>0).map(k=>`
-   <div class="row-between"><span style="color:#475569">${k}</span><span style="font-weight:600">${fmt(state.fixed[k])}</span></div>`).join("")
-||`<div style="color:#94A3B8;font-size:13px">Todavía no cargaste gastos fijos.</div>`;
-return `<div class="kpi-grid">
-   <div class="kpi"><div class="kpi-label">INGRESO TOTAL</div><div class="kpi-val" style="color:#10B981">${fmt(totalIncome())}</div></div>
-   <div class="kpi"><div class="kpi-label">GASTOS FIJOS</div><div class="kpi-val" style="color:#EF4444">${fmt(totalFixed())}</div></div>
-   <div class="kpi"><div class="kpi-label">GASTOS VARIABLES</div><div class="kpi-val" style="color:#F59E0B">${fmt(tv)}</div></div>
-   <div class="kpi"><div class="kpi-label">SALDO FINAL</div><div class="kpi-val" style="color:${saldo>=0?'#2563EB':'#EF4444'}">${fmt(saldo)}</div></div>
- </div>
- <div class="daily-box"><div class="lbl">PRESUPUESTO DIARIO</div><div class="val">${fmt(porDia())}<span style="font-size:14px;font-weight:400">/día</span></div></div>
- <div class="card"><div class="card-title">Variables por persona</div>${personBars}</div>
- <div class="card"><div class="card-title">Comparativo semanal</div><div class="bar-cols">${barCols}</div></div>
- <div class="card"><div class="card-title">Detalle gastos fijos</div>${fixedDetail}</div>`;
+  const saldo=disponible()-totalVar(),tv=totalVar();
+  const tva=totalVarPerson("Agus"),tvc=totalVarPerson("Coki");
+  const maxW=Math.max(...WEEKS.map(w=>weekTotal(w)),1);
+  const barCols=WEEKS.map(w=>{
+    const t=weekTotal(w),h=Math.max(Math.round((t/maxW)*70),4);
+    return `<div class="bar-col"><div class="bar-col-inner"><div class="bar-col-bar" style="height:${h}px"></div></div>
+    <div style="font-size:11px;color:#64748B;margin-top:3px">${w.replace("Semana","S.")}</div>
+    <div style="font-size:12px;font-weight:700">${fmt(t)}</div></div>`;
+  }).join("");
+  const personBars=[["Agus 💙",tva,"#3B82F6"],["Coki 💚",tvc,"#10B981"]].map(([lbl,val,color])=>`
+    <div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+        <span style="font-weight:600">${lbl}</span><span style="font-weight:700;color:${color}">${fmt(val)}</span>
+      </div>
+      <div class="bar-wrap"><div class="bar" style="width:${tv>0?(val/tv)*100:0}%;background:${color}"></div></div>
+    </div>`).join("");
+  const fixedDetail=(state.fixedList||[]).filter(k=>num((state.fixed||{})[k])>0).map(k=>`
+    <div class="row-between"><span style="color:#475569">${k}</span><span style="font-weight:600">${fmt(state.fixed[k])}</span></div>`).join("")
+    ||`<div style="color:#94A3B8;font-size:13px">Todavía no cargaste gastos fijos.</div>`;
+  return `<div class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">INGRESO TOTAL</div><div class="kpi-val" style="color:#10B981">${fmt(totalIncome())}</div></div>
+    <div class="kpi"><div class="kpi-label">GASTOS FIJOS</div><div class="kpi-val" style="color:#EF4444">${fmt(totalFixed())}</div></div>
+    <div class="kpi"><div class="kpi-label">GASTOS VARIABLES</div><div class="kpi-val" style="color:#F59E0B">${fmt(tv)}</div></div>
+    <div class="kpi"><div class="kpi-label">SALDO FINAL</div><div class="kpi-val" style="color:${saldo>=0?'#2563EB':'#EF4444'}">${fmt(saldo)}</div></div>
+  </div>
+  <div class="daily-box"><div class="lbl">PRESUPUESTO DIARIO</div><div class="val">${fmt(porDia())}<span style="font-size:14px;font-weight:400">/día</span></div></div>
+  <div class="card"><div class="card-title">Variables por persona</div>${personBars}</div>
+  <div class="card"><div class="card-title">Comparativo semanal</div><div class="bar-cols">${barCols}</div></div>
+  <div class="card"><div class="card-title">Detalle gastos fijos</div>${fixedDetail}</div>`;
 }
 
 function initApp(){
-if(listening) return;
-listening = true;
-onValue(ref(db,"presupuesto"), snap=>{
-state = snap.exists() ? snap.val() : defaultState();
-document.getElementById("sync-dot").className="sync-dot ok";
-render();
-});
+  if(listening) return;
+  listening=true;
+  onValue(ref(db,"presupuesto"),snap=>{
+    state=snap.exists()?snap.val():defaultState();
+    document.getElementById("sync-dot").className="sync-dot ok";
+    render();
+  });
 }
 </script>
 </body>
