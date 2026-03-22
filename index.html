@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Presupuesto Familiar</title>
+  <meta name="theme-color" content="#2563EB"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-title" content="Presupuesto"/>
+  <link rel="manifest" href="manifest.json"/>
+
+  <!-- ✅ REEMPLAZÁ ESTO CON TU firebaseConfig -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBXV6VmVLgvcBikKOq534n_JdVaq7_oJZI",
+      authDomain: "presupuesto-familiar-32085.firebaseapp.com",
+      databaseURL: "https://presupuesto-familiar-32085-default-rtdb.firebaseio.com",
+      projectId: "presupuesto-familiar-32085",
+      storageBucket: "presupuesto-familiar-32085.firebasestorage.app",
+      messagingSenderId: "243481818423",
+      appId: "1:243481818423:web:14764e473e6c26729856b2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const dbRef = ref(db, "presupuesto");
+
+    window._fbSave = (state) => set(dbRef, state);
+    window._fbListen = (cb) => onValue(dbRef, snap => { if(snap.exists()) cb(snap.val()); });
+    window._fbReady = true;
+    window.dispatchEvent(new Event("fb-ready"));
+  </script>
+
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',sans-serif;background:#F1F5F9;min-height:100vh;padding-bottom:80px}
+    .header{background:linear-gradient(135deg,#1E3A5F,#2563EB);padding:18px 16px 14px;color:#fff}
+    .header h1{font-size:19px;font-weight:800}
+    .header p{font-size:13px;opacity:.8;margin-bottom:10px}
+    .header-selects{display:flex;gap:8px;align-items:center}
+    .header select{padding:5px 10px;border-radius:8px;border:none;background:rgba(255,255,255,0.2);color:#fff;font-size:13px}
+    .sync-dot{width:8px;height:8px;border-radius:50%;background:#94A3B8;margin-left:auto;flex-shrink:0}
+    .sync-dot.ok{background:#4ADE80}
+    .sync-dot.saving{background:#FCD34D}
+    .tabs{display:flex;background:#fff;border-bottom:2px solid #E2E8F0;overflow-x:auto}
+    .tab{flex:1;min-width:80px;padding:11px 4px;border:none;background:transparent;cursor:pointer;font-weight:700;font-size:12px;color:#94A3B8;border-bottom:3px solid transparent;white-space:nowrap}
+    .tab.active{color:#2563EB;border-bottom:3px solid #2563EB}
+    .content{padding:16px 14px}
+    .card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,0.07);margin-bottom:14px}
+    .card-title{font-weight:700;font-size:15px;margin-bottom:14px;color:#1E293B}
+    label{font-size:13px;font-weight:600;color:#64748B;display:block;margin-bottom:5px}
+    .input-wrap{position:relative;margin-bottom:14px}
+    .input-wrap span.pre{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94A3B8;font-size:14px}
+    input[type=number],input[type=text]{width:100%;padding:9px 10px;border-radius:8px;border:1.5px solid #E2E8F0;font-size:14px;outline:none;background:#F8FAFC}
+    .pl{padding-left:26px!important}
+    .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+    .kpi{background:#fff;border-radius:12px;padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,0.07)}
+    .kpi-label{font-size:11px;color:#94A3B8;font-weight:600;margin-bottom:4px}
+    .kpi-val{font-size:19px;font-weight:900}
+    .daily-box{background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;padding:14px;text-align:center;margin-bottom:14px}
+    .daily-box .lbl{font-size:12px;color:#3B82F6;font-weight:600;margin-bottom:4px}
+    .daily-box .val{font-size:32px;font-weight:900;color:#2563EB}
+    .daily-box .sub{font-size:12px;color:#94A3B8;margin-top:2px}
+    .row-between{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #F8FAFC;font-size:13px}
+    .row-between .amt{font-weight:600}
+    .week-btns{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+    .week-btn{padding:7px 14px;border-radius:20px;border:2px solid #CBD5E1;background:#fff;color:#64748B;font-weight:700;font-size:12px;cursor:pointer}
+    .week-btn.active{border-color:#2563EB;background:#EFF6FF;color:#2563EB}
+    .person-title{font-weight:700;font-size:14px;margin-bottom:12px}
+    .var-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+    .var-row input[type=text]{flex:1}
+    .var-row .amt-wrap{position:relative;width:110px}
+    .var-row .amt-wrap span{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#94A3B8;font-size:13px}
+    .var-row input[type=number]{width:110px;padding-left:22px;text-align:right}
+    .btn-remove{background:#FEE2E2;border:none;border-radius:8px;padding:6px 9px;cursor:pointer;color:#EF4444;font-weight:700;font-size:13px}
+    .btn-add{background:#F1F5F9;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:13px;color:#64748B;font-weight:600}
+    .total-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1.5px solid #F1F5F9;font-weight:800}
+    .fixed-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+    .fixed-row .name{flex:1;font-size:13px;color:#334155}
+    .fixed-row input[type=number]{width:120px;text-align:right;padding:7px 8px}
+    .bar-wrap{background:#F1F5F9;border-radius:99px;height:8px;margin-top:4px}
+    .bar{border-radius:99px;height:8px;transition:width .4s}
+    .week-summary{background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+    .bar-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+    .bar-col{text-align:center}
+    .bar-col-inner{height:80px;display:flex;align-items:flex-end;justify-content:center}
+    .bar-col-bar{width:32px;background:linear-gradient(180deg,#3B82F6,#2563EB);border-radius:6px 6px 0 0;transition:height .4s;min-height:4px}
+    .add-fixed-row{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1.5px dashed #E2E8F0}
+    .add-fixed-row input[type=text]{flex:1}
+    .btn-green{background:#DCFCE7;border:none;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:13px;color:#16A34A;font-weight:700}
+    .loading{text-align:center;padding:40px;color:#94A3B8;font-size:14px}
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>💰 Presupuesto Familiar</h1>
+  <p id="header-sub">Agus & Coki</p>
+  <div class="header-selects">
+    <select id="sel-month" onchange="onMonthYear()"></select>
+    <select id="sel-year" onchange="onMonthYear()"></select>
+    <div class="sync-dot" id="sync-dot" title="Estado de sincronización"></div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="setTab('ingresos')">👥 Ingresos</button>
+  <button class="tab" onclick="setTab('fijos')">📋 Fijos</button>
+  <button class="tab" onclick="setTab('variable')">🛒 Semanas</button>
+  <button class="tab" onclick="setTab('resumen')">📊 Resumen</button>
+</div>
+
+<div class="content" id="main-content"><div class="loading">⏳ Conectando...</div></div>
+
+<script>
+const MONTHS = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+const WEEKS = ["Semana 1","Semana 2","Semana 3","Semana 4"];
+const DEFAULT_FIXED = [
+  "Tarjeta Visa","Crédito hipotecario","Luz","Gas","Impuestos","Internet",
+  "Colegio","Gimnasio","Jardinero","Psicóloga Agus","Psicólogo Coki",
+  "Danza","Inglés","Yoga","Nafta","Ahorro mensual","Gastos propios Agus",
+  "Gastos propios Coki","Mensualidad Feli","Gastos chicos"
+];
+
+const today = new Date();
+let state = null;
+let saveTimer = null;
+const dot = document.getElementById("sync-dot");
+
+function defaultState() {
+  const rows = {};
+  WEEKS.forEach(w => { rows[w] = { Agus:[{desc:"",amt:""}], Coki:[{desc:"",amt:""}] }; });
+  return {
+    month: today.getMonth(), year: today.getFullYear(),
+    incAgus:"", incCoki:"",
+    fixedList: [...DEFAULT_FIXED],
+    fixed: Object.fromEntries(DEFAULT_FIXED.map(k=>[k,""])),
+    varRows: rows,
+    activeWeek: "Semana 1", tab: "ingresos"
+  };
+}
+
+function scheduleSave() {
+  dot.className = "sync-dot saving";
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    if(window._fbSave) {
+      window._fbSave(state).then(()=>{ dot.className="sync-dot ok"; });
+    }
+  }, 800);
+}
+
+function num(v){ return parseFloat(v)||0; }
+function fmt(n){ return "$"+Math.round(Number(n)||0).toLocaleString("es-AR"); }
+function totalFixed(){ return (state.fixedList||[]).reduce((s,k)=>s+num((state.fixed||{})[k]),0); }
+function totalIncome(){ return num(state.incAgus)+num(state.incCoki); }
+function disponible(){ return totalIncome()-totalFixed(); }
+function diasMes(){ return new Date(state.year,state.month+1,0).getDate(); }
+function porDia(){ return disponible()>0?disponible()/diasMes():0; }
+function weekPersonTotal(w,p){ return ((state.varRows||{})[w]||{})[p]||[] .reduce((s,r)=>s+num(r.amt),0); }
+function weekTotal(w){ return weekPersonTotal(w,"Agus")+weekPersonTotal(w,"Coki"); }
+function totalVar(){ return WEEKS.reduce((s,w)=>s+weekTotal(w),0); }
+function totalVarPerson(p){ return WEEKS.reduce((s,w)=>s+weekPersonTotal(w,p),0); }
+
+// Selects
+const sm = document.getElementById("sel-month");
+const sy = document.getElementById("sel-year");
+MONTHS.forEach((m,i)=>{ const o=document.createElement("option");o.value=i;o.textContent=m;sm.appendChild(o); });
+[2024,2025,2026,2027].forEach(y=>{ const o=document.createElement("option");o.value=y;o.textContent=y;sy.appendChild(o); });
+
+function onMonthYear(){ state.month=+sm.value; state.year=+sy.value; scheduleSave(); render(); }
+function setTab(t){ state.tab=t; scheduleSave(); render(); }
+
+function render(){
+  if(!state) return;
+  sm.value=state.month; sy.value=state.year;
+  document.getElementById("header-sub").textContent=`Agus & Coki — ${MONTHS[state.month]} ${state.year}`;
+  document.querySelectorAll(".tab").forEach(b=>{
+    const map={ingresos:"Ingresos",fijos:"Fijos",variable:"Semanas",resumen:"Resumen"};
+    b.classList.toggle("active", b.textContent.includes(map[state.tab]));
+  });
+  const c=document.getElementById("main-content");
+  if(state.tab==="ingresos") c.innerHTML=renderIngresos();
+  else if(state.tab==="fijos") c.innerHTML=renderFijos();
+  else if(state.tab==="variable") c.innerHTML=renderVariable();
+  else c.innerHTML=renderResumen();
+}
+
+function renderIngresos(){
+  const disp=disponible(), pd=porDia();
+  return `<div class="card">
+    <div class="card-title">Ingresos del mes</div>
+    <label>Agus 💙</label>
+    <div class="input-wrap"><span class="pre">$</span><input class="pl" type="number" placeholder="0" value="${state.incAgus}" oninput="state.incAgus=this.value;scheduleSave();render()"></div>
+    <label>Coki 💚</label>
+    <div class="input-wrap"><span class="pre">$</span><input class="pl" type="number" placeholder="0" value="${state.incCoki}" oninput="state.incCoki=this.value;scheduleSave();render()"></div>
+  </div>
+  <div class="card">
+    <div class="row-between"><span>Ingreso total</span><span class="amt" style="color:#10B981;font-size:16px">${fmt(totalIncome())}</span></div>
+    <div class="row-between"><span>Gastos fijos</span><span class="amt" style="color:#EF4444">- ${fmt(totalFixed())}</span></div>
+    <div class="row-between" style="font-weight:800;font-size:15px;border:none;padding-top:10px"><span>Disponible</span><span style="color:${disp>=0?'#10B981':'#EF4444'}">${fmt(disp)}</span></div>
+  </div>
+  ${pd>0?`<div class="daily-box"><div class="lbl">PRESUPUESTO DIARIO (${diasMes()} días)</div><div class="val">${fmt(pd)}<span style="font-size:14px;font-weight:400">/día</span></div><div class="sub">${fmt(pd*7)} por semana</div></div>`:""}`;
+}
+
+function renderFijos(){
+  const rows = (state.fixedList||[]).map((k,i)=>`
+    <div class="fixed-row">
+      <span class="name">${k}</span>
+      <input type="number" placeholder="0" value="${(state.fixed||{})[k]||''}" oninput="state.fixed['${k}']=this.value;scheduleSave();render()">
+      <button class="btn-remove" onclick="removeFixed(${i})" title="Eliminar">✕</button>
+    </div>`).join("");
+  return `<div class="card">
+    <div class="card-title">Gastos fijos mensuales</div>
+    ${rows}
+    <div class="add-fixed-row">
+      <input type="text" id="new-fixed-name" placeholder="Nuevo ítem (ej: Expensas)">
+      <button class="btn-green" onclick="addFixed()">+ Agregar</button>
+    </div>
+    <div class="total-row" style="margin-top:14px"><span>TOTAL FIJOS</span><span style="color:#EF4444">${fmt(totalFixed())}</span></div>
+  </div>`;
+}
+
+function addFixed(){
+  const inp = document.getElementById("new-fixed-name");
+  const name = inp.value.trim();
+  if(!name) return;
+  if(!state.fixedList) state.fixedList=[];
+  if(!state.fixed) state.fixed={};
+  state.fixedList.push(name);
+  state.fixed[name]="";
+  scheduleSave(); render();
+}
+function removeFixed(i){
+  const name = state.fixedList[i];
+  state.fixedList.splice(i,1);
+  delete state.fixed[name];
+  scheduleSave(); render();
+}
+
+function renderVariable(){
+  const wt=weekTotal(state.activeWeek), budget=porDia()*7;
+  const weekBtns=WEEKS.map(w=>`<button class="week-btn ${w===state.activeWeek?'active':''}" onclick="state.activeWeek='${w}';scheduleSave();render()">${w}</button>`).join("");
+  const personBlock=(p,color)=>{
+    const rows=((state.varRows[state.activeWeek]||{})[p]||[]).map((r,i)=>`
+      <div class="var-row">
+        <input type="text" placeholder="Concepto" value="${r.desc}" oninput="state.varRows['${state.activeWeek}']['${p}'][${i}].desc=this.value;scheduleSave()">
+        <div class="amt-wrap"><span>$</span><input type="number" placeholder="0" value="${r.amt}" oninput="state.varRows['${state.activeWeek}']['${p}'][${i}].amt=this.value;scheduleSave();render()"></div>
+        ${(state.varRows[state.activeWeek][p].length>1)?`<button class="btn-remove" onclick="removeRow('${state.activeWeek}','${p}',${i})">✕</button>`:""}
+      </div>`).join("");
+    return `<div class="card">
+      <div class="person-title" style="color:${color}">${p==="Agus"?"💙":"💚"} Gastos de ${p}</div>
+      ${rows}
+      <div class="total-row">
+        <button class="btn-add" onclick="addRow('${state.activeWeek}','${p}')">+ Agregar</button>
+        <span style="color:${color}">${fmt(weekPersonTotal(state.activeWeek,p))}</span>
+      </div>
+    </div>`;
+  };
+  return `<div class="week-btns">${weekBtns}</div>
+  <div class="week-summary">
+    <div><div style="font-size:12px;color:#3B82F6;font-weight:600">PRESUPUESTO SEMANAL</div><div style="font-size:20px;font-weight:900;color:#2563EB">${fmt(budget)}</div></div>
+    <div style="text-align:right"><div style="font-size:12px;color:#64748B">Gastado</div><div style="font-size:18px;font-weight:800;color:${wt>budget?'#EF4444':'#10B981'}">${fmt(wt)}</div></div>
+  </div>
+  ${personBlock("Agus","#3B82F6")}${personBlock("Coki","#10B981")}`;
+}
+
+function renderResumen(){
+  const saldo=disponible()-totalVar(), tv=totalVar();
+  const tva=totalVarPerson("Agus"), tvc=totalVarPerson("Coki");
+  const maxW=Math.max(...WEEKS.map(w=>weekTotal(w)),1);
+  const barCols=WEEKS.map(w=>{
+    const t=weekTotal(w),h=Math.max(Math.round((t/maxW)*70),4);
+    return `<div class="bar-col"><div class="bar-col-inner"><div class="bar-col-bar" style="height:${h}px"></div></div>
+    <div style="font-size:11px;color:#64748B;margin-top:3px">${w.replace("Semana","S.")}</div>
+    <div style="font-size:12px;font-weight:700">${fmt(t)}</div></div>`;
+  }).join("");
+  const personBars=[["Agus 💙",tva,"#3B82F6"],["Coki 💚",tvc,"#10B981"]].map(([lbl,val,color])=>`
+    <div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+        <span style="font-weight:600">${lbl}</span><span style="font-weight:700;color:${color}">${fmt(val)}</span>
+      </div>
+      <div class="bar-wrap"><div class="bar" style="width:${tv>0?(val/tv)*100:0}%;background:${color}"></div></div>
+    </div>`).join("");
+  const fixedDetail=(state.fixedList||[]).filter(k=>num((state.fixed||{})[k])>0).map(k=>`
+    <div class="row-between"><span style="color:#475569">${k}</span><span class="amt">${fmt(state.fixed[k])}</span></div>`).join("")
+    ||`<div style="color:#94A3B8;font-size:13px">Todavía no cargaste gastos fijos.</div>`;
+  return `<div class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">INGRESO TOTAL</div><div class="kpi-val" style="color:#10B981">${fmt(totalIncome())}</div></div>
+    <div class="kpi"><div class="kpi-label">GASTOS FIJOS</div><div class="kpi-val" style="color:#EF4444">${fmt(totalFixed())}</div></div>
+    <div class="kpi"><div class="kpi-label">GASTOS VARIABLES</div><div class="kpi-val" style="color:#F59E0B">${fmt(tv)}</div></div>
+    <div class="kpi"><div class="kpi-label">SALDO FINAL</div><div class="kpi-val" style="color:${saldo>=0?'#2563EB':'#EF4444'}">${fmt(saldo)}</div></div>
+  </div>
+  <div class="daily-box"><div class="lbl">PRESUPUESTO DIARIO</div><div class="val">${fmt(porDia())}<span style="font-size:14px;font-weight:400">/día</span></div></div>
+  <div class="card"><div class="card-title">Variables por persona</div>${personBars}</div>
+  <div class="card"><div class="card-title">Comparativo semanal</div><div class="bar-cols">${barCols}</div></div>
+  <div class="card"><div class="card-title">Detalle gastos fijos</div>${fixedDetail}</div>`;
+}
+
+function addRow(w,p){
+  if(!state.varRows[w]) state.varRows[w]={Agus:[{desc:"",amt:""}],Coki:[{desc:"",amt:""}]};
+  state.varRows[w][p].push({desc:"",amt:""});
+  scheduleSave(); render();
+}
+function removeRow(w,p,i){
+  state.varRows[w][p].splice(i,1);
+  if(!state.varRows[w][p].length) state.varRows[w][p]=[{desc:"",amt:""}];
+  scheduleSave(); render();
+}
+
+// Arrancar cuando Firebase esté listo
+function init(){
+  window._fbListen(data => {
+    state = data;
+    dot.className = "sync-dot ok";
+    render();
+  });
+  // Si no hay datos aún, inicializar
+  setTimeout(()=>{ if(!state){ state=defaultState(); scheduleSave(); render(); } }, 3000);
+}
+
+if(window._fbReady) init();
+else window.addEventListener("fb-ready", init);
+</script>
+</body>
+</html>
