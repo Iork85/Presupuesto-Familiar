@@ -1,120 +1,121 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Presupuesto Familiar</title>
-  <meta name="theme-color" content="#2563EB"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-title" content="Presupuesto"/>
-  <link rel="manifest" href="manifest.json"/>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Segoe UI',sans-serif;background:#F1F5F9;min-height:100vh;padding-bottom:80px}
-    #login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;background:linear-gradient(135deg,#1E3A5F,#2563EB)}
-    .login-card{background:#fff;border-radius:20px;padding:32px 24px;width:100%;max-width:340px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.2)}
-    .login-card h1{font-size:28px;margin-bottom:4px}
-    .login-card p{color:#64748B;font-size:14px;margin-bottom:28px}
-    .btn-google{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:14px;border-radius:12px;border:2px solid #E2E8F0;background:#fff;cursor:pointer;font-size:15px;font-weight:700;color:#1E293B}
-    .btn-google img{width:22px;height:22px}
-    .login-error{color:#EF4444;font-size:13px;margin-top:12px}
-    #app-screen{display:none}
-    .header{background:linear-gradient(135deg,#1E3A5F,#2563EB);padding:18px 16px 14px;color:#fff}
-    .header h1{font-size:19px;font-weight:800}
-    .header-selects{display:flex;gap:8px;align-items:center;margin-top:8px}
-    .header select{padding:5px 10px;border-radius:8px;border:none;background:rgba(255,255,255,0.2);color:#fff;font-size:13px}
-    .sync-dot{width:8px;height:8px;border-radius:50%;background:#94A3B8;margin-left:auto;flex-shrink:0}
-    .sync-dot.ok{background:#4ADE80}
-    .sync-dot.saving{background:#FCD34D}
-    .btn-logout{background:rgba(255,255,255,0.15);border:none;color:#fff;padding:5px 10px;border-radius:8px;font-size:12px;cursor:pointer;margin-left:8px}
-    .user-info{display:flex;align-items:center;gap:8px;margin-top:6px}
-    .user-avatar{width:24px;height:24px;border-radius:50%}
-    .user-name{font-size:12px;opacity:.85}
-    .tabs{display:flex;background:#fff;border-bottom:2px solid #E2E8F0;overflow-x:auto}
-    .tab{flex:1;min-width:80px;padding:11px 4px;border:none;background:transparent;cursor:pointer;font-weight:700;font-size:12px;color:#94A3B8;border-bottom:3px solid transparent;white-space:nowrap}
-    .tab.active{color:#2563EB;border-bottom:3px solid #2563EB}
-    .content{padding:16px 14px}
-    .card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,0.07);margin-bottom:14px}
-    .card-title{font-weight:700;font-size:15px;margin-bottom:14px;color:#1E293B}
-    label{font-size:13px;font-weight:600;color:#64748B;display:block;margin-bottom:5px}
-    .input-wrap{position:relative;margin-bottom:14px}
-    .input-wrap span.pre{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94A3B8;font-size:14px}
-    input[type=number],input[type=text]{width:100%;padding:9px 10px;border-radius:8px;border:1.5px solid #E2E8F0;font-size:16px;outline:none;background:#F8FAFC}
-    .pl{padding-left:26px!important}
-    .btn-save{width:100%;padding:12px;border-radius:10px;border:none;background:#2563EB;color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px}
-    .btn-save:active{background:#1D4ED8}
-    .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-    .kpi{background:#fff;border-radius:12px;padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,0.07)}
-    .kpi-label{font-size:11px;color:#94A3B8;font-weight:600;margin-bottom:4px}
-    .kpi-val{font-size:19px;font-weight:900}
-    .daily-box{background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;padding:14px;text-align:center;margin-bottom:14px}
-    .daily-box .lbl{font-size:12px;color:#3B82F6;font-weight:600;margin-bottom:4px}
-    .daily-box .val{font-size:32px;font-weight:900;color:#2563EB}
-    .daily-box .sub{font-size:12px;color:#94A3B8;margin-top:2px}
-    .row-between{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #F8FAFC;font-size:13px}
-    .week-btns{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-    .week-btn{padding:7px 14px;border-radius:20px;border:2px solid #CBD5E1;background:#fff;color:#64748B;font-weight:700;font-size:12px;cursor:pointer}
-    .week-btn.active{border-color:#2563EB;background:#EFF6FF;color:#2563EB}
-    .person-title{font-weight:700;font-size:14px;margin-bottom:12px}
-    .var-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
-    .var-row input[type=text]{flex:1;font-size:15px}
-    .var-row .amt-wrap{position:relative;width:110px}
-    .var-row .amt-wrap span{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#94A3B8;font-size:13px}
-    .var-row input[type=number]{width:110px;padding-left:22px;text-align:right;font-size:15px}
-    .btn-remove{background:#FEE2E2;border:none;border-radius:8px;padding:8px 10px;cursor:pointer;color:#EF4444;font-weight:700;font-size:13px}
-    .btn-add{background:#F1F5F9;border:none;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:13px;color:#64748B;font-weight:600}
-    .total-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1.5px solid #F1F5F9;font-weight:800}
-    .fixed-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
-    .fixed-row .name{flex:1;font-size:13px;color:#334155}
-    .fixed-row input[type=number]{width:120px;text-align:right;padding:8px;font-size:15px}
-    .bar-wrap{background:#F1F5F9;border-radius:99px;height:8px;margin-top:4px}
-    .bar{border-radius:99px;height:8px;transition:width .4s}
-    .week-summary{background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
-    .bar-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-    .bar-col{text-align:center}
-    .bar-col-inner{height:80px;display:flex;align-items:flex-end;justify-content:center}
-    .bar-col-bar{width:32px;background:linear-gradient(180deg,#3B82F6,#2563EB);border-radius:6px 6px 0 0;min-height:4px}
-    .add-fixed-row{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1.5px dashed #E2E8F0}
-    .btn-green{background:#DCFCE7;border:none;border-radius:8px;padding:9px 14px;cursor:pointer;font-size:13px;color:#16A34A;font-weight:700}
-    .saved-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1E293B;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
-    .saved-toast.show{opacity:1}
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Presupuesto Familiar</title>
+<meta name="theme-color" content="#2563EB"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="Presupuesto"/>
+<link rel="manifest" href="manifest.json"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:#F1F5F9;min-height:100vh;padding-bottom:80px}
+#login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;background:linear-gradient(135deg,#1E3A5F,#2563EB)}
+.login-card{background:#fff;border-radius:20px;padding:32px 24px;width:100%;max-width:340px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.2)}
+.login-card h1{font-size:28px;margin-bottom:4px}
+.login-card p{color:#64748B;font-size:14px;margin-bottom:28px}
+.btn-google{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:14px;border-radius:12px;border:2px solid #E2E8F0;background:#fff;cursor:pointer;font-size:15px;font-weight:700;color:#1E293B}
+.btn-google img{width:22px;height:22px}
+.login-error{color:#EF4444;font-size:13px;margin-top:12px}
+#app-screen{display:none}
+.header{background:linear-gradient(135deg,#1E3A5F,#2563EB);padding:18px 16px 14px;color:#fff}
+.header h1{font-size:19px;font-weight:800}
+.header-selects{display:flex;gap:8px;align-items:center;margin-top:8px}
+.header select{padding:5px 10px;border-radius:8px;border:none;background:rgba(255,255,255,0.2);color:#fff;font-size:13px}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#94A3B8;margin-left:auto;flex-shrink:0}
+.sync-dot.ok{background:#4ADE80}
+.sync-dot.saving{background:#FCD34D}
+.btn-logout{background:rgba(255,255,255,0.15);border:none;color:#fff;padding:5px 10px;border-radius:8px;font-size:12px;cursor:pointer;margin-left:8px}
+.user-info{display:flex;align-items:center;gap:8px;margin-top:6px}
+.user-avatar{width:24px;height:24px;border-radius:50%}
+.user-name{font-size:12px;opacity:.85}
+.tabs{display:flex;background:#fff;border-bottom:2px solid #E2E8F0;overflow-x:auto}
+.tab{flex:1;min-width:80px;padding:11px 4px;border:none;background:transparent;cursor:pointer;font-weight:700;font-size:12px;color:#94A3B8;border-bottom:3px solid transparent;white-space:nowrap}
+.tab.active{color:#2563EB;border-bottom:3px solid #2563EB}
+.content{padding:16px 14px}
+.card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,0.07);margin-bottom:14px}
+.card-title{font-weight:700;font-size:15px;margin-bottom:14px;color:#1E293B}
+label{font-size:13px;font-weight:600;color:#64748B;display:block;margin-bottom:5px}
+.input-wrap{position:relative;margin-bottom:14px}
+.input-wrap span.pre{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94A3B8;font-size:14px}
+input[type=number],input[type=text]{width:100%;padding:9px 10px;border-radius:8px;border:1.5px solid #E2E8F0;font-size:16px;outline:none;background:#F8FAFC}
+.pl{padding-left:26px!important}
+.btn-save{width:100%;padding:12px;border-radius:10px;border:none;background:#2563EB;color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px}
+.btn-save:active{background:#1D4ED8}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.kpi{background:#fff;border-radius:12px;padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,0.07)}
+.kpi-label{font-size:11px;color:#94A3B8;font-weight:600;margin-bottom:4px}
+.kpi-val{font-size:19px;font-weight:900}
+.daily-box{background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;padding:14px;text-align:center;margin-bottom:14px}
+.daily-box .lbl{font-size:12px;color:#3B82F6;font-weight:600;margin-bottom:4px}
+.daily-box .val{font-size:32px;font-weight:900;color:#2563EB}
+.daily-box .sub{font-size:12px;color:#94A3B8;margin-top:2px}
+.row-between{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #F8FAFC;font-size:13px}
+.week-btns{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.week-btn{padding:7px 14px;border-radius:20px;border:2px solid #CBD5E1;background:#fff;color:#64748B;font-weight:700;font-size:12px;cursor:pointer}
+.week-btn.active{border-color:#2563EB;background:#EFF6FF;color:#2563EB}
+.person-title{font-weight:700;font-size:14px;margin-bottom:12px}
+.var-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.var-row input[type=text]{flex:1;font-size:15px}
+.var-row .amt-wrap{position:relative;width:110px}
+.var-row .amt-wrap span{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#94A3B8;font-size:13px}
+.var-row input[type=number]{width:110px;padding-left:22px;text-align:right;font-size:15px}
+.btn-remove{background:#FEE2E2;border:none;border-radius:8px;padding:8px 10px;cursor:pointer;color:#EF4444;font-weight:700;font-size:13px}
+.btn-add{background:#F1F5F9;border:none;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:13px;color:#64748B;font-weight:600}
+.total-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1.5px solid #F1F5F9;font-weight:800}
+.fixed-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.fixed-row .name{flex:1;font-size:13px;color:#334155}
+.fixed-row input[type=number]{width:120px;text-align:right;padding:8px;font-size:15px}
+.bar-wrap{background:#F1F5F9;border-radius:99px;height:8px;margin-top:4px}
+.bar{border-radius:99px;height:8px;transition:width .4s}
+.week-summary{background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.bar-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.bar-col{text-align:center}
+.bar-col-inner{height:80px;display:flex;align-items:flex-end;justify-content:center}
+.bar-col-bar{width:32px;background:linear-gradient(180deg,#3B82F6,#2563EB);border-radius:6px 6px 0 0;min-height:4px}
+.add-fixed-row{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1.5px dashed #E2E8F0}
+.btn-green{background:#DCFCE7;border:none;border-radius:8px;padding:9px 14px;cursor:pointer;font-size:13px;color:#16A34A;font-weight:700}
+.saved-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1E293B;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
+.saved-toast.show{opacity:1}
+</style>
 </head>
 <body>
 
 <div id="login-screen">
-  <div class="login-card">
-    <div style="font-size:48px;margin-bottom:12px">💰</div>
-    <h1>Presupuesto</h1>
-    <p>Agus & Coki — Control familiar</p>
-    <input id="inp-pass" type="password" placeholder="Contraseña" style="width:100%;padding:12px;border-radius:10px;border:1.5px solid #E2E8F0;font-size:16px;margin-bottom:12px;outline:none;text-align:center">
-    <button class="btn-google" onclick="loginPass()" style="background:#2563EB;color:#fff;border:none;border-radius:12px;padding:14px;width:100%;font-size:15px;font-weight:700;cursor:pointer">
-      Entrar
-    </button>
-    <div class="login-error" id="login-error"></div>
-  </div>
+<div class="login-card">
+<div style="font-size:48px;margin-bottom:12px">💰</div>
+<h1>Presupuesto</h1>
+<p>Agus & Coki — Control familiar</p>
+<button class="btn-google" onclick="loginGoogle()">
+<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"/>
+Entrar con Google
+</button>
+<div class="login-error" id="login-error"></div>
+</div>
 </div>
 
 <div id="app-screen">
-  <div class="header">
-    <h1>💰 Presupuesto Familiar</h1>
-    <div class="header-selects">
-      <select id="sel-month"></select>
-      <select id="sel-year"></select>
-      <div class="sync-dot ok" id="sync-dot"></div>
-      <button class="btn-logout" onclick="logout()">Salir</button>
-    </div>
-    <div class="user-info">
-      <span class="user-name">👋 Bienvenido</span>
-    </div>
-  </div>
-  <div class="tabs">
-    <button class="tab active" onclick="setTab('ingresos')">👥 Ingresos</button>
-    <button class="tab" onclick="setTab('fijos')">📋 Fijos</button>
-    <button class="tab" onclick="setTab('variable')">🛒 Semanas</button>
-    <button class="tab" onclick="setTab('resumen')">📊 Resumen</button>
-  </div>
-  <div class="content" id="main-content"></div>
+<div class="header">
+<h1>💰 Presupuesto Familiar</h1>
+<div class="header-selects">
+<select id="sel-month"></select>
+<select id="sel-year"></select>
+<div class="sync-dot ok" id="sync-dot"></div>
+<button class="btn-logout" onclick="logout()">Salir</button>
+</div>
+<div class="user-info">
+<img class="user-avatar" id="user-avatar" src=""/>
+<span class="user-name" id="user-name"></span>
+</div>
+</div>
+<div class="tabs">
+<button class="tab active" onclick="setTab('ingresos')">👥 Ingresos</button>
+<button class="tab" onclick="setTab('fijos')">📋 Fijos</button>
+<button class="tab" onclick="setTab('variable')">🛒 Semanas</button>
+<button class="tab" onclick="setTab('resumen')">📊 Resumen</button>
+</div>
+<div class="content" id="main-content"></div>
 </div>
 
 <div class="saved-toast" id="toast">✅ Guardado</div>
@@ -122,54 +123,57 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBXV6VmVLgvcBikKOq534n_JdVaq7_oJZI",
-  authDomain: "presupuesto-familiar-32085.firebaseapp.com",
-  databaseURL: "https://presupuesto-familiar-32085-default-rtdb.firebaseio.com",
-  projectId: "presupuesto-familiar-32085",
-  storageBucket: "presupuesto-familiar-32085.firebasestorage.app",
-  messagingSenderId: "243481818423",
-  appId: "1:243481818423:web:14764e473e6c26729856b2"
+apiKey: "AIzaSyBXV6VmVLgvcBikKOq534n_JdVaq7_oJZI",
+authDomain: "presupuesto-familiar-32085.firebaseapp.com",
+databaseURL: "https://presupuesto-familiar-32085-default-rtdb.firebaseio.com",
+projectId: "presupuesto-familiar-32085",
+storageBucket: "presupuesto-familiar-32085.firebasestorage.app",
+messagingSenderId: "243481818423",
+appId: "1:243481818423:web:14764e473e6c26729856b2"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
-const CONTRASENA = "ameneiro";
+// Manejar resultado del redirect
+getRedirectResult(auth).catch(e => console.log("redirect error", e));
 
-window.loginPass = async () => {
-  const inp = document.getElementById("inp-pass");
-  if(inp.value === CONTRASENA){
-    await signInAnonymously(auth);
-  } else {
-    document.getElementById("login-error").textContent = "⛔ Contraseña incorrecta.";
-  }
+window.loginGoogle = async () => {
+try {
+    await signInWithPopup(auth, provider);
+    await signInWithRedirect(auth, provider);
+} catch(e) {
+document.getElementById("login-error").textContent = "Error al iniciar sesión. Intentá de nuevo.";
+}
 };
-window.logout = () => auth.signOut();
+window.logout = () => signOut(auth);
 
 onAuthStateChanged(auth, user => {
-  if(user){
-    document.getElementById("login-screen").style.display = "none";
-    document.getElementById("app-screen").style.display = "block";
-    document.getElementById("user-name").textContent = user.displayName || user.email;
-    document.getElementById("user-avatar").src = user.photoURL || "";
-    initApp();
-  } else {
-    document.getElementById("login-screen").style.display = "flex";
-    document.getElementById("app-screen").style.display = "none";
-  }
+if(user){
+document.getElementById("login-screen").style.display = "none";
+document.getElementById("app-screen").style.display = "block";
+document.getElementById("user-name").textContent = user.displayName || user.email;
+document.getElementById("user-avatar").src = user.photoURL || "";
+initApp();
+} else {
+document.getElementById("login-screen").style.display = "flex";
+document.getElementById("app-screen").style.display = "none";
+}
 });
 
 const MONTHS = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 const WEEKS = ["Semana 1","Semana 2","Semana 3","Semana 4"];
 const DEFAULT_FIXED = [
-  "Tarjeta Visa","Crédito hipotecario","Luz","Gas","Impuestos","Internet",
-  "Colegio","Gimnasio","Jardinero","Psicóloga Agus","Psicólogo Coki",
-  "Danza","Inglés","Yoga","Nafta","Ahorro mensual","Gastos propios Agus",
-  "Gastos propios Coki","Mensualidad Feli","Gastos chicos"
+"Tarjeta Visa","Crédito hipotecario","Luz","Gas","Impuestos","Internet",
+"Colegio","Gimnasio","Jardinero","Psicóloga Agus","Psicólogo Coki",
+"Danza","Inglés","Yoga","Nafta","Ahorro mensual","Gastos propios Agus",
+"Gastos propios Coki","Mensualidad Feli","Gastos chicos"
 ];
 
 const today = new Date();
@@ -177,58 +181,58 @@ let state = null;
 let listening = false;
 
 function defaultState(){
-  const rows={};
-  WEEKS.forEach(w=>{rows[w]={Agus:[{desc:"",amt:""}],Coki:[{desc:"",amt:""}]};});
-  return {
-    month:today.getMonth(), year:today.getFullYear(),
-    incAgus:"", incCoki:"",
-    fixedList:[...DEFAULT_FIXED],
-    fixed:Object.fromEntries(DEFAULT_FIXED.map(k=>[k,""])),
-    varRows:rows, activeWeek:"Semana 1", tab:"ingresos"
-  };
+const rows={};
+WEEKS.forEach(w=>{rows[w]={Agus:[{desc:"",amt:""}],Coki:[{desc:"",amt:""}]};});
+return {
+month:today.getMonth(), year:today.getFullYear(),
+incAgus:"", incCoki:"",
+fixedList:[...DEFAULT_FIXED],
+fixed:Object.fromEntries(DEFAULT_FIXED.map(k=>[k,""])),
+varRows:rows, activeWeek:"Semana 1", tab:"ingresos"
+};
 }
 
 function showToast(){
-  const t=document.getElementById("toast");
-  t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"),2000);
+const t=document.getElementById("toast");
+t.classList.add("show");
+setTimeout(()=>t.classList.remove("show"),2000);
 }
 
 function doSave(){
-  document.getElementById("sync-dot").className="sync-dot saving";
-  // Leer valores actuales del DOM antes de guardar
-  readDOMIntoState();
-  set(ref(db,"presupuesto"), state).then(()=>{
-    document.getElementById("sync-dot").className="sync-dot ok";
-    showToast();
-    render();
-  });
+document.getElementById("sync-dot").className="sync-dot saving";
+// Leer valores actuales del DOM antes de guardar
+readDOMIntoState();
+set(ref(db,"presupuesto"), state).then(()=>{
+document.getElementById("sync-dot").className="sync-dot ok";
+showToast();
+render();
+});
 }
 
 function readDOMIntoState(){
-  // Ingresos
-  const ia = document.getElementById("inp-agus");
-  const ic = document.getElementById("inp-coki");
-  if(ia) state.incAgus = ia.value;
-  if(ic) state.incCoki = ic.value;
-  // Fijos
-  (state.fixedList||[]).forEach((k,i)=>{
-    const el = document.getElementById("fixed-"+i);
-    if(el) state.fixed[k] = el.value;
-  });
-  // Variables
-  const w = state.activeWeek;
-  ["Agus","Coki"].forEach(p=>{
-    (state.varRows[w][p]||[]).forEach((r,i)=>{
-      const desc = document.getElementById(`vdesc-${p}-${i}`);
-      const amt = document.getElementById(`vamt-${p}-${i}`);
-      if(desc) state.varRows[w][p][i].desc = desc.value;
-      if(amt) state.varRows[w][p][i].amt = amt.value;
-    });
-  });
-  // Mes/año
-  state.month = +document.getElementById("sel-month").value;
-  state.year = +document.getElementById("sel-year").value;
+// Ingresos
+const ia = document.getElementById("inp-agus");
+const ic = document.getElementById("inp-coki");
+if(ia) state.incAgus = ia.value;
+if(ic) state.incCoki = ic.value;
+// Fijos
+(state.fixedList||[]).forEach((k,i)=>{
+const el = document.getElementById("fixed-"+i);
+if(el) state.fixed[k] = el.value;
+});
+// Variables
+const w = state.activeWeek;
+["Agus","Coki"].forEach(p=>{
+(state.varRows[w][p]||[]).forEach((r,i)=>{
+const desc = document.getElementById(`vdesc-${p}-${i}`);
+const amt = document.getElementById(`vamt-${p}-${i}`);
+if(desc) state.varRows[w][p][i].desc = desc.value;
+if(amt) state.varRows[w][p][i].amt = amt.value;
+});
+});
+// Mes/año
+state.month = +document.getElementById("sel-month").value;
+state.year = +document.getElementById("sel-year").value;
 }
 
 function num(v){return parseFloat(v)||0;}
@@ -253,152 +257,152 @@ window.setWeek = w=>{ readDOMIntoState(); state.activeWeek=w; render(); };
 window.doSave = doSave;
 
 window.addFixed = ()=>{
-  readDOMIntoState();
-  const inp=document.getElementById("new-fixed-name");
-  const name=inp.value.trim();
-  if(!name) return;
-  state.fixedList.push(name);
-  state.fixed[name]="";
-  doSave();
+readDOMIntoState();
+const inp=document.getElementById("new-fixed-name");
+const name=inp.value.trim();
+if(!name) return;
+state.fixedList.push(name);
+state.fixed[name]="";
+doSave();
 };
 window.removeFixed = i=>{
-  readDOMIntoState();
-  const name=state.fixedList[i];
-  state.fixedList.splice(i,1);
-  delete state.fixed[name];
-  doSave();
+readDOMIntoState();
+const name=state.fixedList[i];
+state.fixedList.splice(i,1);
+delete state.fixed[name];
+doSave();
 };
 window.addRow = (w,p)=>{
-  readDOMIntoState();
-  state.varRows[w][p].push({desc:"",amt:""});
-  doSave();
+readDOMIntoState();
+state.varRows[w][p].push({desc:"",amt:""});
+doSave();
 };
 window.removeRow = (w,p,i)=>{
-  readDOMIntoState();
-  state.varRows[w][p].splice(i,1);
-  if(!state.varRows[w][p].length) state.varRows[w][p]=[{desc:"",amt:""}];
-  doSave();
+readDOMIntoState();
+state.varRows[w][p].splice(i,1);
+if(!state.varRows[w][p].length) state.varRows[w][p]=[{desc:"",amt:""}];
+doSave();
 };
 
 function render(){
-  if(!state) return;
-  sm.value=state.month; sy.value=state.year;
-  document.querySelectorAll(".tab").forEach(b=>{
-    const map={ingresos:"Ingresos",fijos:"Fijos",variable:"Semanas",resumen:"Resumen"};
-    b.classList.toggle("active",b.textContent.includes(map[state.tab]));
-  });
-  const c=document.getElementById("main-content");
-  if(state.tab==="ingresos") c.innerHTML=renderIngresos();
-  else if(state.tab==="fijos") c.innerHTML=renderFijos();
-  else if(state.tab==="variable") c.innerHTML=renderVariable();
-  else c.innerHTML=renderResumen();
+if(!state) return;
+sm.value=state.month; sy.value=state.year;
+document.querySelectorAll(".tab").forEach(b=>{
+const map={ingresos:"Ingresos",fijos:"Fijos",variable:"Semanas",resumen:"Resumen"};
+b.classList.toggle("active",b.textContent.includes(map[state.tab]));
+});
+const c=document.getElementById("main-content");
+if(state.tab==="ingresos") c.innerHTML=renderIngresos();
+else if(state.tab==="fijos") c.innerHTML=renderFijos();
+else if(state.tab==="variable") c.innerHTML=renderVariable();
+else c.innerHTML=renderResumen();
 }
 
 function renderIngresos(){
-  const disp=disponible(), pd=porDia();
-  return `<div class="card">
-    <div class="card-title">Ingresos del mes</div>
-    <label>Agus 💙</label>
-    <div class="input-wrap"><span class="pre">$</span><input id="inp-agus" class="pl" type="number" inputmode="numeric" placeholder="0" value="${state.incAgus}"></div>
-    <label>Coki 💚</label>
-    <div class="input-wrap"><span class="pre">$</span><input id="inp-coki" class="pl" type="number" inputmode="numeric" placeholder="0" value="${state.incCoki}"></div>
-    <button class="btn-save" onclick="doSave()">💾 Guardar</button>
-  </div>
-  <div class="card">
-    <div class="row-between"><span>Ingreso total</span><span style="color:#10B981;font-size:16px;font-weight:700">${fmt(totalIncome())}</span></div>
-    <div class="row-between"><span>Gastos fijos</span><span style="color:#EF4444;font-weight:600">- ${fmt(totalFixed())}</span></div>
-    <div class="row-between" style="font-weight:800;font-size:15px;border:none;padding-top:10px"><span>Disponible</span><span style="color:${disp>=0?'#10B981':'#EF4444'}">${fmt(disp)}</span></div>
-  </div>
-  ${pd>0?`<div class="daily-box"><div class="lbl">PRESUPUESTO DIARIO (${diasMes()} días)</div><div class="val">${fmt(pd)}<span style="font-size:14px;font-weight:400">/día</span></div><div class="sub">${fmt(pd*7)} por semana</div></div>`:""}`;
+const disp=disponible(), pd=porDia();
+return `<div class="card">
+   <div class="card-title">Ingresos del mes</div>
+   <label>Agus 💙</label>
+   <div class="input-wrap"><span class="pre">$</span><input id="inp-agus" class="pl" type="number" inputmode="numeric" placeholder="0" value="${state.incAgus}"></div>
+   <label>Coki 💚</label>
+   <div class="input-wrap"><span class="pre">$</span><input id="inp-coki" class="pl" type="number" inputmode="numeric" placeholder="0" value="${state.incCoki}"></div>
+   <button class="btn-save" onclick="doSave()">💾 Guardar</button>
+ </div>
+ <div class="card">
+   <div class="row-between"><span>Ingreso total</span><span style="color:#10B981;font-size:16px;font-weight:700">${fmt(totalIncome())}</span></div>
+   <div class="row-between"><span>Gastos fijos</span><span style="color:#EF4444;font-weight:600">- ${fmt(totalFixed())}</span></div>
+   <div class="row-between" style="font-weight:800;font-size:15px;border:none;padding-top:10px"><span>Disponible</span><span style="color:${disp>=0?'#10B981':'#EF4444'}">${fmt(disp)}</span></div>
+ </div>
+ ${pd>0?`<div class="daily-box"><div class="lbl">PRESUPUESTO DIARIO (${diasMes()} días)</div><div class="val">${fmt(pd)}<span style="font-size:14px;font-weight:400">/día</span></div><div class="sub">${fmt(pd*7)} por semana</div></div>`:""}`;
 }
 
 function renderFijos(){
-  const rows=(state.fixedList||[]).map((k,i)=>`
-    <div class="fixed-row">
-      <span class="name">${k}</span>
-      <input id="fixed-${i}" type="number" inputmode="numeric" placeholder="0" value="${(state.fixed||{})[k]||''}">
-      <button class="btn-remove" onclick="removeFixed(${i})">✕</button>
-    </div>`).join("");
-  return `<div class="card">
-    <div class="card-title">Gastos fijos mensuales</div>
-    ${rows}
-    <div class="add-fixed-row">
-      <input type="text" id="new-fixed-name" placeholder="Nuevo ítem">
-      <button class="btn-green" onclick="addFixed()">+ Agregar</button>
-    </div>
-    <button class="btn-save" onclick="doSave()" style="margin-top:14px">💾 Guardar todo</button>
-    <div style="text-align:right;font-weight:800;font-size:15px;margin-top:10px">Total: <span style="color:#EF4444">${fmt(totalFixed())}</span></div>
-  </div>`;
+const rows=(state.fixedList||[]).map((k,i)=>`
+   <div class="fixed-row">
+     <span class="name">${k}</span>
+     <input id="fixed-${i}" type="number" inputmode="numeric" placeholder="0" value="${(state.fixed||{})[k]||''}">
+     <button class="btn-remove" onclick="removeFixed(${i})">✕</button>
+   </div>`).join("");
+return `<div class="card">
+   <div class="card-title">Gastos fijos mensuales</div>
+   ${rows}
+   <div class="add-fixed-row">
+     <input type="text" id="new-fixed-name" placeholder="Nuevo ítem">
+     <button class="btn-green" onclick="addFixed()">+ Agregar</button>
+   </div>
+   <button class="btn-save" onclick="doSave()" style="margin-top:14px">💾 Guardar todo</button>
+   <div style="text-align:right;font-weight:800;font-size:15px;margin-top:10px">Total: <span style="color:#EF4444">${fmt(totalFixed())}</span></div>
+ </div>`;
 }
 
 function renderVariable(){
-  const wt=weekTotal(state.activeWeek), budget=porDia()*7;
-  const weekBtns=WEEKS.map(w=>`<button class="week-btn ${w===state.activeWeek?'active':''}" onclick="setWeek('${w}')">${w}</button>`).join("");
-  const personBlock=(p,color)=>{
-    const rows=((state.varRows[state.activeWeek]||{})[p]||[]).map((r,i)=>`
-      <div class="var-row">
-        <input type="text" id="vdesc-${p}-${i}" placeholder="Concepto" value="${r.desc}">
-        <div class="amt-wrap"><span>$</span><input type="number" id="vamt-${p}-${i}" inputmode="numeric" placeholder="0" value="${r.amt}"></div>
-        ${state.varRows[state.activeWeek][p].length>1?`<button class="btn-remove" onclick="removeRow('${state.activeWeek}','${p}',${i})">✕</button>`:""}
-      </div>`).join("");
-    return `<div class="card">
-      <div class="person-title" style="color:${color}">${p==="Agus"?"💙":"💚"} Gastos de ${p}</div>
-      ${rows}
-      <div class="total-row">
-        <button class="btn-add" onclick="addRow('${state.activeWeek}','${p}')">+ Fila</button>
-        <span style="color:${color};font-size:15px">${fmt(weekPersonTotal(state.activeWeek,p))}</span>
-      </div>
-      <button class="btn-save" onclick="doSave()" style="margin-top:10px">💾 Guardar</button>
-    </div>`;
-  };
-  return `<div class="week-btns">${weekBtns}</div>
-  <div class="week-summary">
-    <div><div style="font-size:12px;color:#3B82F6;font-weight:600">PRESUPUESTO SEMANAL</div><div style="font-size:20px;font-weight:900;color:#2563EB">${fmt(budget)}</div></div>
-    <div style="text-align:right"><div style="font-size:12px;color:#64748B">Gastado</div><div style="font-size:18px;font-weight:800;color:${wt>budget?'#EF4444':'#10B981'}">${fmt(wt)}</div></div>
-  </div>
-  ${personBlock("Agus","#3B82F6")}${personBlock("Coki","#10B981")}`;
+const wt=weekTotal(state.activeWeek), budget=porDia()*7;
+const weekBtns=WEEKS.map(w=>`<button class="week-btn ${w===state.activeWeek?'active':''}" onclick="setWeek('${w}')">${w}</button>`).join("");
+const personBlock=(p,color)=>{
+const rows=((state.varRows[state.activeWeek]||{})[p]||[]).map((r,i)=>`
+     <div class="var-row">
+       <input type="text" id="vdesc-${p}-${i}" placeholder="Concepto" value="${r.desc}">
+       <div class="amt-wrap"><span>$</span><input type="number" id="vamt-${p}-${i}" inputmode="numeric" placeholder="0" value="${r.amt}"></div>
+       ${state.varRows[state.activeWeek][p].length>1?`<button class="btn-remove" onclick="removeRow('${state.activeWeek}','${p}',${i})">✕</button>`:""}
+     </div>`).join("");
+return `<div class="card">
+     <div class="person-title" style="color:${color}">${p==="Agus"?"💙":"💚"} Gastos de ${p}</div>
+     ${rows}
+     <div class="total-row">
+       <button class="btn-add" onclick="addRow('${state.activeWeek}','${p}')">+ Fila</button>
+       <span style="color:${color};font-size:15px">${fmt(weekPersonTotal(state.activeWeek,p))}</span>
+     </div>
+     <button class="btn-save" onclick="doSave()" style="margin-top:10px">💾 Guardar</button>
+   </div>`;
+};
+return `<div class="week-btns">${weekBtns}</div>
+ <div class="week-summary">
+   <div><div style="font-size:12px;color:#3B82F6;font-weight:600">PRESUPUESTO SEMANAL</div><div style="font-size:20px;font-weight:900;color:#2563EB">${fmt(budget)}</div></div>
+   <div style="text-align:right"><div style="font-size:12px;color:#64748B">Gastado</div><div style="font-size:18px;font-weight:800;color:${wt>budget?'#EF4444':'#10B981'}">${fmt(wt)}</div></div>
+ </div>
+ ${personBlock("Agus","#3B82F6")}${personBlock("Coki","#10B981")}`;
 }
 
 function renderResumen(){
-  const saldo=disponible()-totalVar(), tv=totalVar();
-  const tva=totalVarPerson("Agus"), tvc=totalVarPerson("Coki");
-  const maxW=Math.max(...WEEKS.map(w=>weekTotal(w)),1);
-  const barCols=WEEKS.map(w=>{
-    const t=weekTotal(w),h=Math.max(Math.round((t/maxW)*70),4);
-    return `<div class="bar-col"><div class="bar-col-inner"><div class="bar-col-bar" style="height:${h}px"></div></div>
-    <div style="font-size:11px;color:#64748B;margin-top:3px">${w.replace("Semana","S.")}</div>
-    <div style="font-size:12px;font-weight:700">${fmt(t)}</div></div>`;
-  }).join("");
-  const personBars=[["Agus 💙",tva,"#3B82F6"],["Coki 💚",tvc,"#10B981"]].map(([lbl,val,color])=>`
-    <div style="margin-bottom:12px">
-      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
-        <span style="font-weight:600">${lbl}</span><span style="font-weight:700;color:${color}">${fmt(val)}</span>
-      </div>
-      <div class="bar-wrap"><div class="bar" style="width:${tv>0?(val/tv)*100:0}%;background:${color}"></div></div>
-    </div>`).join("");
-  const fixedDetail=(state.fixedList||[]).filter(k=>num((state.fixed||{})[k])>0).map(k=>`
-    <div class="row-between"><span style="color:#475569">${k}</span><span style="font-weight:600">${fmt(state.fixed[k])}</span></div>`).join("")
-    ||`<div style="color:#94A3B8;font-size:13px">Todavía no cargaste gastos fijos.</div>`;
-  return `<div class="kpi-grid">
-    <div class="kpi"><div class="kpi-label">INGRESO TOTAL</div><div class="kpi-val" style="color:#10B981">${fmt(totalIncome())}</div></div>
-    <div class="kpi"><div class="kpi-label">GASTOS FIJOS</div><div class="kpi-val" style="color:#EF4444">${fmt(totalFixed())}</div></div>
-    <div class="kpi"><div class="kpi-label">GASTOS VARIABLES</div><div class="kpi-val" style="color:#F59E0B">${fmt(tv)}</div></div>
-    <div class="kpi"><div class="kpi-label">SALDO FINAL</div><div class="kpi-val" style="color:${saldo>=0?'#2563EB':'#EF4444'}">${fmt(saldo)}</div></div>
-  </div>
-  <div class="daily-box"><div class="lbl">PRESUPUESTO DIARIO</div><div class="val">${fmt(porDia())}<span style="font-size:14px;font-weight:400">/día</span></div></div>
-  <div class="card"><div class="card-title">Variables por persona</div>${personBars}</div>
-  <div class="card"><div class="card-title">Comparativo semanal</div><div class="bar-cols">${barCols}</div></div>
-  <div class="card"><div class="card-title">Detalle gastos fijos</div>${fixedDetail}</div>`;
+const saldo=disponible()-totalVar(), tv=totalVar();
+const tva=totalVarPerson("Agus"), tvc=totalVarPerson("Coki");
+const maxW=Math.max(...WEEKS.map(w=>weekTotal(w)),1);
+const barCols=WEEKS.map(w=>{
+const t=weekTotal(w),h=Math.max(Math.round((t/maxW)*70),4);
+return `<div class="bar-col"><div class="bar-col-inner"><div class="bar-col-bar" style="height:${h}px"></div></div>
+   <div style="font-size:11px;color:#64748B;margin-top:3px">${w.replace("Semana","S.")}</div>
+   <div style="font-size:12px;font-weight:700">${fmt(t)}</div></div>`;
+}).join("");
+const personBars=[["Agus 💙",tva,"#3B82F6"],["Coki 💚",tvc,"#10B981"]].map(([lbl,val,color])=>`
+   <div style="margin-bottom:12px">
+     <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+       <span style="font-weight:600">${lbl}</span><span style="font-weight:700;color:${color}">${fmt(val)}</span>
+     </div>
+     <div class="bar-wrap"><div class="bar" style="width:${tv>0?(val/tv)*100:0}%;background:${color}"></div></div>
+   </div>`).join("");
+const fixedDetail=(state.fixedList||[]).filter(k=>num((state.fixed||{})[k])>0).map(k=>`
+   <div class="row-between"><span style="color:#475569">${k}</span><span style="font-weight:600">${fmt(state.fixed[k])}</span></div>`).join("")
+||`<div style="color:#94A3B8;font-size:13px">Todavía no cargaste gastos fijos.</div>`;
+return `<div class="kpi-grid">
+   <div class="kpi"><div class="kpi-label">INGRESO TOTAL</div><div class="kpi-val" style="color:#10B981">${fmt(totalIncome())}</div></div>
+   <div class="kpi"><div class="kpi-label">GASTOS FIJOS</div><div class="kpi-val" style="color:#EF4444">${fmt(totalFixed())}</div></div>
+   <div class="kpi"><div class="kpi-label">GASTOS VARIABLES</div><div class="kpi-val" style="color:#F59E0B">${fmt(tv)}</div></div>
+   <div class="kpi"><div class="kpi-label">SALDO FINAL</div><div class="kpi-val" style="color:${saldo>=0?'#2563EB':'#EF4444'}">${fmt(saldo)}</div></div>
+ </div>
+ <div class="daily-box"><div class="lbl">PRESUPUESTO DIARIO</div><div class="val">${fmt(porDia())}<span style="font-size:14px;font-weight:400">/día</span></div></div>
+ <div class="card"><div class="card-title">Variables por persona</div>${personBars}</div>
+ <div class="card"><div class="card-title">Comparativo semanal</div><div class="bar-cols">${barCols}</div></div>
+ <div class="card"><div class="card-title">Detalle gastos fijos</div>${fixedDetail}</div>`;
 }
 
 function initApp(){
-  if(listening) return;
-  listening = true;
-  onValue(ref(db,"presupuesto"), snap=>{
-    state = snap.exists() ? snap.val() : defaultState();
-    document.getElementById("sync-dot").className="sync-dot ok";
-    render();
-  });
+if(listening) return;
+listening = true;
+onValue(ref(db,"presupuesto"), snap=>{
+state = snap.exists() ? snap.val() : defaultState();
+document.getElementById("sync-dot").className="sync-dot ok";
+render();
+});
 }
 </script>
 </body>
