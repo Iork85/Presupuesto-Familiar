@@ -1,283 +1,563 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Presupuesto Familiar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GastoFamiliar</title>
   <meta name="theme-color" content="#2563EB"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-title" content="GastoFamiliar"/>
+  <link rel="manifest" href="manifest.json"/>
   <style>
-    /* Estilos base mantenidos y optimizados para evitar scroll horizontal */
-    *{box-sizing:border-box;margin:0;padding:0; -webkit-tap-highlight-color: transparent;}
-    body{font-family:'Segoe UI',Roboto,sans-serif;background:#F1F5F9;min-height:100vh;padding-bottom:100px; color:#1E293B}
-    #login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:linear-gradient(135deg,#1E3A5F,#2563EB)}
-    .login-card{background:#fff;border-radius:24px;padding:40px 24px;width:100%;max-width:360px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.3)}
-    
-    /* App Layout */
-    .header{background:linear-gradient(135deg,#1E3A5F,#2563EB);padding:20px 16px;color:#fff;position:sticky;top:0;z-index:100}
-    .header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    .header-selects{display:flex;gap:8px;margin-bottom:12px}
-    .header select{padding:6px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.15);color:#fff;font-size:14px;outline:none}
-    
-    .tabs{display:flex;background:#fff;position:sticky;top:105px;z-index:90;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
-    .tab{flex:1;padding:14px 5px;border:none;background:transparent;cursor:pointer;font-weight:700;font-size:12px;color:#94A3B8;border-bottom:3px solid transparent;transition:0.2s}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',sans-serif;background:#F1F5F9;min-height:100vh;padding-bottom:80px}
+    .header{background:linear-gradient(135deg,#1E3A5F,#2563EB);padding:18px 16px 14px;color:#fff}
+    .header h1{font-size:19px;font-weight:800}
+    .header-selects{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+    .header select{padding:5px 10px;border-radius:8px;border:none;background:rgba(255,255,255,0.2);color:#fff;font-size:13px}
+    .sync-dot{width:8px;height:8px;border-radius:50%;background:#94A3B8;margin-left:auto;flex-shrink:0}
+    .sync-dot.ok{background:#4ADE80}
+    .sync-dot.saving{background:#FCD34D}
+    .tabs{display:flex;background:#fff;border-bottom:2px solid #E2E8F0;overflow-x:auto}
+    .tab{flex:1;min-width:80px;padding:11px 4px;border:none;background:transparent;cursor:pointer;font-weight:700;font-size:12px;color:#94A3B8;border-bottom:3px solid transparent;white-space:nowrap}
     .tab.active{color:#2563EB;border-bottom:3px solid #2563EB}
-
-    /* Cards y Elementos */
-    .content{padding:16px}
-    .card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.05);margin-bottom:16px}
-    .card-title{font-weight:800;font-size:16px;margin-bottom:16px;color:#1E3A5F;display:flex;justify-content:space-between}
-    
-    input[type=number],input[type=text]{width:100%;padding:12px;border-radius:10px;border:1.5px solid #E2E8F0;font-size:16px;background:#F8FAFC;transition:border 0.2s}
-    input:focus{border-color:#2563EB;outline:none;background:#fff}
-    
-    .btn-save{width:100%;padding:14px;border-radius:12px;border:none;background:#2563EB;color:#fff;font-size:16px;font-weight:700;cursor:pointer;margin-top:8px;box-shadow:0 4px 12px rgba(37,99,235,0.2)}
-    
-    /* Utils */
-    .sync-dot{width:10px;height:10px;border-radius:50%;background:#94A3B8}
-    .sync-dot.ok{background:#4ADE80;box-shadow:0 0 8px #4ADE80}
-    .sync-dot.saving{background:#FCD34D;animation:pulse 1s infinite}
-    @keyframes pulse{0%{opacity:1}50%{opacity:0.4}100%{opacity:1}}
-    
-    .daily-box{background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1px solid #BFDBFE;border-radius:16px;padding:20px;text-align:center;margin-bottom:16px}
-    .val-large{font-size:36px;font-weight:900;color:#2563EB;letter-spacing:-1px}
-
-    /* Gráficos de Resumen */
-    .bar-cols{display:flex;justify-content:space-around;align-items:flex-end;height:120px;padding-top:20px}
-    .bar-col{display:flex;flex-direction:column;align-items:center;width:20%}
-    .bar-col-bar{width:30px;background:#2563EB;border-radius:6px 6px 0 0;transition:height 0.5s ease-out}
+    .content{padding:16px 14px}
+    .card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,0.07);margin-bottom:14px}
+    .card-title{font-weight:700;font-size:15px;margin-bottom:14px;color:#1E293B}
+    label{font-size:13px;font-weight:600;color:#64748B;display:block;margin-bottom:5px}
+    .input-wrap{position:relative;margin-bottom:14px}
+    .input-wrap span.pre{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94A3B8;font-size:14px}
+    input[type=number],input[type=text]{width:100%;padding:9px 10px;border-radius:8px;border:1.5px solid #E2E8F0;font-size:16px;outline:none;background:#F8FAFC}
+    .pl{padding-left:26px!important}
+    .btn-save{width:100%;padding:12px;border-radius:10px;border:none;background:#2563EB;color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px}
+    .btn-save:active{background:#1D4ED8}
+    .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+    .kpi{background:#fff;border-radius:12px;padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,0.07)}
+    .kpi-label{font-size:11px;color:#94A3B8;font-weight:600;margin-bottom:4px}
+    .kpi-val{font-size:19px;font-weight:900}
+    .daily-box{background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;padding:14px;text-align:center;margin-bottom:14px}
+    .daily-box .lbl{font-size:12px;color:#3B82F6;font-weight:600;margin-bottom:4px}
+    .daily-box .val{font-size:32px;font-weight:900;color:#2563EB}
+    .daily-box .sub{font-size:12px;color:#94A3B8;margin-top:2px}
+    .row-between{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #F8FAFC;font-size:13px}
+    .week-btns{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+    .week-btn{padding:7px 14px;border-radius:20px;border:2px solid #CBD5E1;background:#fff;color:#64748B;font-weight:700;font-size:12px;cursor:pointer}
+    .week-btn.active{border-color:#2563EB;background:#EFF6FF;color:#2563EB}
+    .person-title{font-weight:700;font-size:14px;margin-bottom:12px}
+    .header-date{
+      padding:5px 10px;border-radius:8px;border:none;
+      background:rgba(255,255,255,0.2);
+      color:#fff;font-size:13px;
+      outline:none;
+      min-width:145px;
+    }
+    .header-date::-webkit-calendar-picker-indicator{filter:invert(1)}
+    .var-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+    .var-row input[type=text]{flex:1;font-size:15px}
+    .var-row .amt-wrap{position:relative;width:110px}
+    .var-row .amt-wrap span{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#94A3B8;font-size:13px}
+    .var-row input[type=number]{width:110px;padding-left:22px;text-align:right;font-size:15px}
+    .btn-remove{background:#FEE2E2;border:none;border-radius:8px;padding:8px 10px;cursor:pointer;color:#EF4444;font-weight:700;font-size:13px}
+    .btn-add{background:#F1F5F9;border:none;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:13px;color:#64748B;font-weight:600}
+    .total-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1.5px solid #F1F5F9;font-weight:800}
+    .fixed-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+    .fixed-row .name{flex:1;font-size:13px;color:#334155}
+    .fixed-row input[type=number]{width:120px;text-align:right;padding:8px;font-size:15px}
+    .bar-wrap{background:#F1F5F9;border-radius:99px;height:8px;margin-top:4px}
+    .bar{border-radius:99px;height:8px;transition:width .4s}
+    .week-summary{background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+    .bar-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+    .bar-col{text-align:center}
+    .bar-col-inner{height:80px;display:flex;align-items:flex-end;justify-content:center}
+    .bar-col-bar{width:32px;background:linear-gradient(180deg,#3B82F6,#2563EB);border-radius:6px 6px 0 0;min-height:4px}
+    .add-fixed-row{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1.5px dashed #E2E8F0}
+    .btn-green{background:#DCFCE7;border:none;border-radius:8px;padding:9px 14px;cursor:pointer;font-size:13px;color:#16A34A;font-weight:700}
+    .saved-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1E293B;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
+    .saved-toast.show{opacity:1}
+    .loading{text-align:center;padding:40px;color:#94A3B8;font-size:14px}
+    .auth-overlay{
+      position:fixed;inset:0;background:rgba(15,23,42,0.65);
+      display:flex;align-items:center;justify-content:center;
+      padding:16px;z-index:10000;
+    }
+    .auth-card{
+      background:#fff;border-radius:14px;padding:18px;
+      max-width:420px;width:100%;
+      box-shadow:0 12px 40px rgba(0,0,0,0.25);
+    }
+    .auth-card .title{
+      font-weight:900;color:#1E293B;font-size:18px;margin-bottom:10px;
+    }
+    .auth-card label{margin-top:10px}
+    .auth-card input{
+      width:100%;padding:10px 12px;border-radius:10px;
+      border:1.5px solid #E2E8F0;font-size:15px;outline:none;background:#F8FAFC;
+    }
+    .auth-card .actions{margin-top:14px}
   </style>
 </head>
 <body>
 
-<div id="login-screen">
-  <div class="login-card">
-    <span style="font-size:60px">🏦</span>
-    <h1 style="margin:15px 0 5px">Nuestras Cuentas</h1>
-    <p style="color:#64748B; margin-bottom:30px">Agus & Coki</p>
-    <button class="btn-google" onclick="loginGoogle()" style="display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:14px;border-radius:12px;border:2px solid #E2E8F0;background:#fff;cursor:pointer;font-weight:700">
-      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"/>
-      Entrar con Google
-    </button>
-    <div id="login-error" style="color:#EF4444;margin-top:15px;font-size:14px"></div>
+<div class="header">
+  <h1>💰 GastoFamiliar</h1>
+  <div class="header-selects">
+    <select id="sel-month"></select>
+    <select id="sel-year"></select>
+    <input id="sel-date" class="header-date" type="date" />
+    <div class="sync-dot ok" id="sync-dot"></div>
   </div>
 </div>
 
-<div id="app-screen" style="display:none">
-  <div class="header">
-    <div class="header-top">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div class="sync-dot ok" id="sync-dot"></div>
-        <h1 style="font-size:18px">Presupuesto</h1>
-      </div>
-      <button onclick="logout()" style="background:none;border:none;color:#fff;opacity:0.8;font-size:13px">Cerrar Sesión</button>
-    </div>
-    <div class="header-selects">
-      <select id="sel-month" onchange="changePeriod()"></select>
-      <select id="sel-year" onchange="changePeriod()"></select>
-    </div>
-  </div>
-
-  <div class="tabs">
-    <button class="tab active" onclick="setTab('ingresos')">INGRESOS</button>
-    <button class="tab" onclick="setTab('fijos')">FIJOS</button>
-    <button class="tab" onclick="setTab('variable')">SEMANAS</button>
-    <button class="tab" onclick="setTab('resumen')">RESUMEN</button>
-  </div>
-
-  <div class="content" id="main-content"></div>
+<div class="tabs">
+  <button class="tab active" onclick="setTab('ingresos')">👥 Ingresos</button>
+  <button class="tab" onclick="setTab('fijos')">📋 Fijos</button>
+  <button class="tab" onclick="setTab('variable')">🛒 Semanas</button>
+  <button class="tab" onclick="setTab('resumen')">📊 Resumen</button>
 </div>
 
-<div class="saved-toast" id="toast" style="position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1E293B;color:#fff;padding:12px 24px;border-radius:30px;display:none;z-index:1000">✅ Datos guardados</div>
+<div class="content" id="main-content"><div class="loading">⏳ Cargando...</div></div>
+<div class="saved-toast" id="toast">✅ Guardado</div>
+
+<div class="auth-overlay" id="auth-overlay">
+  <div class="auth-card">
+    <div class="title">Acceso</div>
+    <div style="color:#64748B;font-size:13px;font-weight:600;margin-bottom:6px">Iniciá sesión para ver y editar tus datos.</div>
+    <label for="login-email">Email</label>
+    <input id="login-email" type="email" placeholder="tu@email.com" autocomplete="username"/>
+    <label for="login-password">Contraseña</label>
+    <input id="login-password" type="password" placeholder="••••••••" autocomplete="current-password"/>
+    <div class="actions">
+      <button id="btn-login" class="btn-save" type="button" onclick="doLogin()" style="margin-top:0">Iniciar sesión</button>
+    </div>
+    <div id="auth-error" style="color:#EF4444;margin-top:10px;font-weight:700;font-size:13px;min-height:18px"></div>
+  </div>
+</div>
 
 <script type="module">
-  // Configuración de Firebase (Se mantiene la tuya)
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBXV6VmVLgvcBikKOq534n_JdVaq7_oJZI",
-    authDomain: "presupuesto-familiar-32085.firebaseapp.com",
-    databaseURL: "https://presupuesto-familiar-32085-default-rtdb.firebaseio.com",
-    projectId: "presupuesto-familiar-32085",
-    storageBucket: "presupuesto-familiar-32085.firebasestorage.app",
-    messagingSenderId: "243481818423",
-    appId: "1:243481818423:web:14764e473e6c26729856b2"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyBXV6VmVLgvcBikKOq534n_JdVaq7_oJZI",
+  authDomain: "presupuesto-familiar-32085.firebaseapp.com",
+  databaseURL: "https://presupuesto-familiar-32085-default-rtdb.firebaseio.com",
+  projectId: "presupuesto-familiar-32085",
+  storageBucket: "presupuesto-familiar-32085.firebasestorage.app",
+  messagingSenderId: "243481818423",
+  appId: "1:243481818423:web:14764e473e6c26729856b2"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+let dbUnsubscribe = null;
 
-  let state = null;
-  let isSaving = false;
+// Mantiene la sesión entre recargas en este navegador (para no loguearte cada vez).
+setPersistence(auth, browserLocalPersistence).catch(()=>{});
 
-  // --- LÓGICA DE AUTH ---
-  window.loginGoogle = () => signInWithPopup(auth, provider).catch(e => document.getElementById('login-error').innerText = "Error al entrar");
-  window.logout = () => signOut(auth);
+function setAuthError(msg){
+  const el = document.getElementById("auth-error");
+  if(el) el.textContent = msg || "";
+}
 
-  onAuthStateChanged(auth, user => {
-    if(user) {
-      document.getElementById("login-screen").style.display = "none";
-      document.getElementById("app-screen").style.display = "block";
-      initData();
-    } else {
-      document.getElementById("login-screen").style.display = "flex";
-      document.getElementById("app-screen").style.display = "none";
-    }
-  });
+function showAuthOverlay(show){
+  const overlay = document.getElementById("auth-overlay");
+  if(!overlay) return;
+  overlay.style.display = show ? "flex" : "none";
+}
 
-  // --- LÓGICA DE DATOS ---
-  function initData() {
-    onValue(ref(db, "presupuesto"), (snapshot) => {
-      if (!isSaving) { // Evitar que el re-render de Firebase pise lo que el usuario está escribiendo
-        state = snapshot.exists() ? snapshot.val() : createDefaultState();
-        render();
-      }
-    });
+function stopDbListener(){
+  if(dbUnsubscribe){
+    dbUnsubscribe();
+    dbUnsubscribe = null;
   }
+}
 
-  function createDefaultState() {
-    const weeks = {};
-    ["Semana 1","Semana 2","Semana 3","Semana 4"].forEach(w => {
-      weeks[w] = { Agus: [{desc:"", amt:""}], Coki: [{desc:"", amt:""}] };
-    });
-    return {
-      month: new Date().getMonth(),
-      year: new Date().getFullYear(),
-      incAgus: "", incCoki: "",
-      fixedList: ["Alquiler", "Luz", "Gas", "Internet"],
-      fixed: {},
-      varRows: weeks,
-      activeWeek: "Semana 1",
-      tab: "ingresos"
-    };
-  }
-
-  // --- RENDERIZADO Y DOM ---
-  function render() {
-    if (!state) return;
-    
-    // Poblar Selects si están vacíos
-    populateSelects();
-    
-    const content = document.getElementById("main-content");
-    // Actualizar Tabs
-    document.querySelectorAll('.tab').forEach(t => {
-      t.classList.toggle('active', t.onclick.toString().includes(`'${state.tab}'`));
-    });
-
-    if (state.tab === 'ingresos') content.innerHTML = renderIngresos();
-    if (state.tab === 'fijos') content.innerHTML = renderFijos();
-    if (state.tab === 'variable') content.innerHTML = renderVariable();
-    if (state.tab === 'resumen') content.innerHTML = renderResumen();
-  }
-
-  window.setTab = (t) => {
-    readDOM();
-    state.tab = t;
-    render();
-  };
-
-  window.changePeriod = () => {
-    state.month = parseInt(document.getElementById("sel-month").value);
-    state.year = parseInt(document.getElementById("sel-year").value);
-    save();
-  };
-
-  // --- HELPERS DE CÁLCULO ---
-  const num = v => parseFloat(v) || 0;
-  const fmt = v => "$" + Math.round(num(v)).toLocaleString('es-AR');
-  const getDaysInMonth = (m, y) => new Date(y, m + 1, 0).getDate();
-
-  function readDOM() {
-    // Esta función mapea lo que hay en pantalla al objeto state antes de cualquier cambio
-    const ia = document.getElementById("inp-agus");
-    const ic = document.getElementById("inp-coki");
-    if(ia) state.incAgus = ia.value;
-    if(ic) state.incCoki = ic.value;
-
-    (state.fixedList || []).forEach((name, i) => {
-      const el = document.getElementById(`fixed-${i}`);
-      if(el) state.fixed[name] = el.value;
-    });
-
-    if (state.tab === 'variable') {
-      ["Agus", "Coki"].forEach(p => {
-        state.varRows[state.activeWeek][p].forEach((row, i) => {
-          const d = document.getElementById(`vdesc-${p}-${i}`);
-          const a = document.getElementById(`vamt-${p}-${i}`);
-          if(d) row.desc = d.value;
-          if(a) row.amt = a.value;
-        });
-      });
-    }
-  }
-
-  async function save() {
-    readDOM();
-    isSaving = true;
-    document.getElementById("sync-dot").className = "sync-dot saving";
-    try {
-      await set(ref(db, "presupuesto"), state);
-      showToast();
-    } finally {
-      isSaving = false;
-      document.getElementById("sync-dot").className = "sync-dot ok";
+function startDbListener(){
+  if(dbUnsubscribe) return;
+  dbUnsubscribe = onValue(
+    ref(db,"presupuesto"),
+    snap=>{
+      state=snap.exists()?snap.val():defaultState();
+      // Ajustar la vista al día actual (sin esperar a que el usuario toque nada).
+      // Mantiene los datos existentes, pero recalcula "Semana X" según la fecha.
+      applyDateToState(new Date(), false);
+      document.getElementById("sync-dot").className="sync-dot ok";
       render();
+    },
+    err=>{
+      // Si Realtime Database rechaza la lectura por reglas, onValue no llama al callback principal.
+      // Usamos cancelCallback para mostrar el motivo en pantalla.
+      document.getElementById("sync-dot").className="sync-dot";
+      const el = document.getElementById("main-content");
+      if(el){
+        el.innerHTML = '<div class="loading">⛔ No autorizado para leer los datos.</div>';
+      }
     }
+  );
+}
+
+function doLogin(){
+  const email = document.getElementById("login-email")?.value?.trim();
+  const password = document.getElementById("login-password")?.value;
+  if(!email || !password){
+    setAuthError("Ingresá email y contraseña.");
+    return;
   }
+  const btn = document.getElementById("btn-login");
+  if(btn) btn.disabled = true;
+  setAuthError("");
+  signInWithEmailAndPassword(auth, email, password)
+    .catch(()=>{ setAuthError("No se pudo iniciar sesión. Revisá tus datos."); })
+    .finally(()=>{ if(btn) btn.disabled = false; });
+}
 
-  window.save = save; // Hacerlo global para los botones
+window.doLogin = doLogin;
 
-  function showToast() {
-    const t = document.getElementById("toast");
-    t.style.display = "block";
-    setTimeout(() => t.style.display = "none", 2000);
+const MONTHS = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+const WEEKS = ["Semana 1","Semana 2","Semana 3","Semana 4"];
+const DEFAULT_FIXED = [
+  "Tarjeta Visa","Crédito hipotecario","Luz","Gas","Impuestos","Internet",
+  "Colegio","Gimnasio","Jardinero","Psicóloga Agus","Psicólogo Coki",
+  "Danza","Inglés","Yoga","Nafta","Ahorro mensual","Gastos propios Agus",
+  "Gastos propios Coki","Mensualidad Feli","Gastos chicos"
+];
+
+const today = new Date();
+let state = null;
+
+function pad2(n){return String(n).padStart(2,"0");}
+function dateToISO(d){
+  return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+}
+function parseISODateLocal(s){
+  // Espera formato YYYY-MM-DD (lo que devuelve input[type=date])
+  if(!s || typeof s !== "string") return null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+  if(!m) return null;
+  const y = Number(m[1]);
+  const mo = Number(m[2]) - 1;
+  const day = Number(m[3]);
+  const dt = new Date(y, mo, day);
+  if(Number.isNaN(dt.getTime())) return null;
+  return dt;
+}
+function weekLabelFromDay(day){
+  // Semana 1: 1-7, Semana 2: 8-14, ... (clamp 1..4)
+  const idx = Math.floor((Math.max(1, day)-1)/7) + 1;
+  const w = Math.min(4, Math.max(1, idx));
+  return WEEKS[w-1];
+}
+
+function applyDateToState(d, rerender=true){
+  if(!state) return;
+  const y = d.getFullYear();
+  const m = d.getMonth();
+  const day = d.getDate();
+  state.year = y;
+  state.month = m;
+  state.activeWeek = weekLabelFromDay(day);
+
+  // Sincronizar UI
+  const sm = document.getElementById("sel-month");
+  const sy = document.getElementById("sel-year");
+  const sd = document.getElementById("sel-date");
+  if(sm) sm.value = String(m);
+  if(sy) sy.value = String(y);
+  if(sd) sd.value = dateToISO(d);
+
+  if(rerender) render();
+}
+
+function defaultState(){
+  const rows={};
+  WEEKS.forEach(w=>{rows[w]={Agus:[{desc:"",amt:""}],Coki:[{desc:"",amt:""}]};});
+  return {
+    month:today.getMonth(), year:today.getFullYear(),
+    incAgus:"", incCoki:"",
+    fixedList:[...DEFAULT_FIXED],
+    fixed:Object.fromEntries(DEFAULT_FIXED.map(k=>[k,""])),
+    varRows:rows, activeWeek:weekLabelFromDay(today.getDate()), tab:"ingresos"
+  };
+}
+
+function showToast(){
+  const t=document.getElementById("toast");
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),2000);
+}
+
+function doSave(){
+  if(!auth.currentUser){
+    setAuthError("Necesitás iniciar sesión para guardar.");
+    showAuthOverlay(true);
+    return;
   }
+  document.getElementById("sync-dot").className="sync-dot saving";
+  readDOMIntoState();
+  set(ref(db,"presupuesto"), state).then(()=>{
+    document.getElementById("sync-dot").className="sync-dot ok";
+    showToast();
+    render();
+  });
+}
 
-  function populateSelects() {
-    const sm = document.getElementById("sel-month");
-    const sy = document.getElementById("sel-year");
-    if (sm.options.length > 0) return;
+function readDOMIntoState(){
+  const ia=document.getElementById("inp-agus");
+  const ic=document.getElementById("inp-coki");
+  if(ia) state.incAgus=ia.value;
+  if(ic) state.incCoki=ic.value;
+  (state.fixedList||[]).forEach((k,i)=>{
+    const el=document.getElementById("fixed-"+i);
+    if(el) state.fixed[k]=el.value;
+  });
+  const w=state.activeWeek;
+  ["Agus","Coki"].forEach(p=>{
+    (state.varRows[w][p]||[]).forEach((r,i)=>{
+      const desc=document.getElementById(`vdesc-${p}-${i}`);
+      const amt=document.getElementById(`vamt-${p}-${i}`);
+      if(desc) state.varRows[w][p][i].desc=desc.value;
+      if(amt) state.varRows[w][p][i].amt=amt.value;
+    });
+  });
+  state.month=+document.getElementById("sel-month").value;
+  state.year=+document.getElementById("sel-year").value;
+}
 
-    const months = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
-    months.forEach((m, i) => sm.add(new Option(m, i)));
-    [2025, 2026].forEach(y => sy.add(new Option(y, y)));
-    
-    sm.value = state.month;
-    sy.value = state.year;
-  }
+function num(v){return parseFloat(v)||0;}
+function fmt(n){return "$"+Math.round(Number(n)||0).toLocaleString("es-AR");}
+function totalFixed(){return (state.fixedList||[]).reduce((s,k)=>s+num((state.fixed||{})[k]),0);}
+function totalIncome(){return num(state.incAgus)+num(state.incCoki);}
+function disponible(){return totalIncome()-totalFixed();}
+function diasMes(){return new Date(state.year,state.month+1,0).getDate();}
+function porDia(){return disponible()>0?disponible()/diasMes():0;}
+function weekPersonTotal(w,p){return (((state.varRows||{})[w]||{})[p]||[]).reduce((s,r)=>s+num(r.amt),0);}
+function weekTotal(w){return weekPersonTotal(w,"Agus")+weekPersonTotal(w,"Coki");}
+function totalVar(){return WEEKS.reduce((s,w)=>s+weekTotal(w),0);}
+function totalVarPerson(p){return WEEKS.reduce((s,w)=>s+weekPersonTotal(w,p),0);}
 
-  // Plantilla Ingresos
-  function renderIngresos() {
-    const totalInc = num(state.incAgus) + num(state.incCoki);
-    const totalFix = state.fixedList.reduce((acc, curr) => acc + num(state.fixed[curr]), 0);
-    const disp = totalInc - totalFix;
-    const daily = disp / getDaysInMonth(state.month, state.year);
+const sm=document.getElementById("sel-month");
+const sy=document.getElementById("sel-year");
+MONTHS.forEach((m,i)=>{const o=document.createElement("option");o.value=i;o.textContent=m;sm.appendChild(o);});
+[2024,2025,2026,2027].forEach(y=>{const o=document.createElement("option");o.value=y;o.textContent=y;sy.appendChild(o);});
 
-    return `
-      <div class="card">
-        <div class="card-title">Ingresos Mensuales</div>
-        <label style="font-size:12px; color:#64748B">Agus 💙</label>
-        <input id="inp-agus" type="number" value="${state.incAgus}" placeholder="0" style="margin-bottom:12px">
-        <label style="font-size:12px; color:#64748B">Coki 💚</label>
-        <input id="inp-coki" type="number" value="${state.incCoki}" placeholder="0">
-        <button class="btn-save" onclick="save()">💾 Guardar Todo</button>
+// Precargar UI de fecha (para que se vea el calendario incluso antes de que baje la data).
+const todayUI = new Date();
+const sd = document.getElementById("sel-date");
+if(sd){
+  sd.value = dateToISO(todayUI);
+}
+if(sm){
+  sm.value = String(todayUI.getMonth());
+}
+if(sy){
+  sy.value = String(todayUI.getFullYear());
+}
+
+// Mantener sincronizado el "calendario" (fecha) con month/year y recalcular Semana X.
+const dateEl = document.getElementById("sel-date");
+if(dateEl){
+  dateEl.addEventListener("change", ()=>{
+    const d = parseISODateLocal(dateEl.value);
+    if(!d) return;
+    applyDateToState(d, true);
+  });
+}
+if(sm){
+  sm.addEventListener("change", ()=>{
+    if(!state) return;
+    const d0 = parseISODateLocal(dateEl?.value) || new Date(state.year, state.month, 1);
+    const newMonth = +sm.value;
+    const newYear = state.year;
+    const dim = new Date(newYear, newMonth+1, 0).getDate();
+    const day = Math.min(d0.getDate(), dim);
+    applyDateToState(new Date(newYear, newMonth, day), true);
+  });
+}
+if(sy){
+  sy.addEventListener("change", ()=>{
+    if(!state) return;
+    const d0 = parseISODateLocal(dateEl?.value) || new Date(state.year, state.month, 1);
+    const newYear = +sy.value;
+    const newMonth = state.month;
+    const dim = new Date(newYear, newMonth+1, 0).getDate();
+    const day = Math.min(d0.getDate(), dim);
+    applyDateToState(new Date(newYear, newMonth, day), true);
+  });
+}
+
+window.setTab=t=>{readDOMIntoState();state.tab=t;render();};
+window.setWeek=w=>{
+  readDOMIntoState();
+  const weekIdx = WEEKS.indexOf(w) + 1;
+  if(weekIdx <= 0) return;
+  const baseDay = (weekIdx - 1) * 7 + 1; // Semana 1 => día 1, Semana 2 => día 8, etc.
+  const dim = new Date(state.year, state.month+1, 0).getDate();
+  const day = Math.min(baseDay, dim);
+  applyDateToState(new Date(state.year, state.month, day), false);
+  render();
+};
+window.doSave=doSave;
+window.addFixed=()=>{
+  readDOMIntoState();
+  const inp=document.getElementById("new-fixed-name");
+  const name=inp.value.trim();
+  if(!name) return;
+  state.fixedList.push(name);
+  state.fixed[name]="";
+  doSave();
+};
+window.removeFixed=i=>{
+  readDOMIntoState();
+  const name=state.fixedList[i];
+  state.fixedList.splice(i,1);
+  delete state.fixed[name];
+  doSave();
+};
+window.addRow=(w,p)=>{
+  readDOMIntoState();
+  state.varRows[w][p].push({desc:"",amt:""});
+  doSave();
+};
+window.removeRow=(w,p,i)=>{
+  readDOMIntoState();
+  state.varRows[w][p].splice(i,1);
+  if(!state.varRows[w][p].length) state.varRows[w][p]=[{desc:"",amt:""}];
+  doSave();
+};
+
+function render(){
+  if(!state) return;
+  sm.value=state.month; sy.value=state.year;
+  document.querySelectorAll(".tab").forEach(b=>{
+    const map={ingresos:"Ingresos",fijos:"Fijos",variable:"Semanas",resumen:"Resumen"};
+    b.classList.toggle("active",b.textContent.includes(map[state.tab]));
+  });
+  const c=document.getElementById("main-content");
+  if(state.tab==="ingresos") c.innerHTML=renderIngresos();
+  else if(state.tab==="fijos") c.innerHTML=renderFijos();
+  else if(state.tab==="variable") c.innerHTML=renderVariable();
+  else c.innerHTML=renderResumen();
+}
+
+function renderIngresos(){
+  const disp=disponible(),pd=porDia();
+  return `<div class="card">
+    <div class="card-title">Ingresos del mes</div>
+    <label>Agus 💙</label>
+    <div class="input-wrap"><span class="pre">$</span><input id="inp-agus" class="pl" type="number" inputmode="numeric" placeholder="0" value="${state.incAgus}"></div>
+    <label>Coki 💚</label>
+    <div class="input-wrap"><span class="pre">$</span><input id="inp-coki" class="pl" type="number" inputmode="numeric" placeholder="0" value="${state.incCoki}"></div>
+    <button class="btn-save" onclick="doSave()">💾 Guardar</button>
+  </div>
+  <div class="card">
+    <div class="row-between"><span>Ingreso total</span><span style="color:#10B981;font-size:16px;font-weight:700">${fmt(totalIncome())}</span></div>
+    <div class="row-between"><span>Gastos fijos</span><span style="color:#EF4444;font-weight:600">- ${fmt(totalFixed())}</span></div>
+    <div class="row-between" style="font-weight:800;font-size:15px;border:none;padding-top:10px"><span>Disponible</span><span style="color:${disp>=0?'#10B981':'#EF4444'}">${fmt(disp)}</span></div>
+  </div>
+  ${pd>0?`<div class="daily-box"><div class="lbl">PRESUPUESTO DIARIO (${diasMes()} días)</div><div class="val">${fmt(pd)}<span style="font-size:14px;font-weight:400">/día</span></div><div class="sub">${fmt(pd*7)} por semana</div></div>`:""}`;
+}
+
+function renderFijos(){
+  const rows=(state.fixedList||[]).map((k,i)=>`
+    <div class="fixed-row">
+      <span class="name">${k}</span>
+      <input id="fixed-${i}" type="number" inputmode="numeric" placeholder="0" value="${(state.fixed||{})[k]||''}">
+      <button class="btn-remove" onclick="removeFixed(${i})">✕</button>
+    </div>`).join("");
+  return `<div class="card">
+    <div class="card-title">Gastos fijos mensuales</div>
+    ${rows}
+    <div class="add-fixed-row">
+      <input type="text" id="new-fixed-name" placeholder="Nuevo ítem">
+      <button class="btn-green" onclick="addFixed()">+ Agregar</button>
+    </div>
+    <button class="btn-save" onclick="doSave()" style="margin-top:14px">💾 Guardar todo</button>
+    <div style="text-align:right;font-weight:800;font-size:15px;margin-top:10px">Total: <span style="color:#EF4444">${fmt(totalFixed())}</span></div>
+  </div>`;
+}
+
+function renderVariable(){
+  const wt=weekTotal(state.activeWeek),budget=porDia()*7;
+  const weekBtns=WEEKS.map(w=>`<button class="week-btn ${w===state.activeWeek?'active':''}" onclick="setWeek('${w}')">${w}</button>`).join("");
+  const personBlock=(p,color)=>{
+    const rows=((state.varRows[state.activeWeek]||{})[p]||[]).map((r,i)=>`
+      <div class="var-row">
+        <input type="text" id="vdesc-${p}-${i}" placeholder="Concepto" value="${r.desc}">
+        <div class="amt-wrap"><span>$</span><input type="number" id="vamt-${p}-${i}" inputmode="numeric" placeholder="0" value="${r.amt}"></div>
+        ${state.varRows[state.activeWeek][p].length>1?`<button class="btn-remove" onclick="removeRow('${state.activeWeek}','${p}',${i})">✕</button>`:""}
+      </div>`).join("");
+    return `<div class="card">
+      <div class="person-title" style="color:${color}">${p==="Agus"?"💙":"💚"} Gastos de ${p}</div>
+      ${rows}
+      <div class="total-row">
+        <button class="btn-add" onclick="addRow('${state.activeWeek}','${p}')">+ Fila</button>
+        <span style="color:${color};font-size:15px">${fmt(weekPersonTotal(state.activeWeek,p))}</span>
       </div>
-      <div class="daily-box">
-        <div style="font-size:13px; font-weight:700; color:#3B82F6; margin-bottom:5px">PRESUPUESTO DIARIO</div>
-        <div class="val-large">${fmt(daily)}</div>
-        <div style="font-size:14px; color:#64748B; margin-top:5px">Disponible: ${fmt(disp)}</div>
-      </div>
-    `;
-  }
+      <button class="btn-save" onclick="doSave()" style="margin-top:10px">💾 Guardar</button>
+    </div>`;
+  };
+  return `<div class="week-btns">${weekBtns}</div>
+  <div class="week-summary">
+    <div><div style="font-size:12px;color:#3B82F6;font-weight:600">PRESUPUESTO SEMANAL</div><div style="font-size:20px;font-weight:900;color:#2563EB">${fmt(budget)}</div></div>
+    <div style="text-align:right"><div style="font-size:12px;color:#64748B">Gastado</div><div style="font-size:18px;font-weight:800;color:${wt>budget?'#EF4444':'#10B981'}">${fmt(wt)}</div></div>
+  </div>
+  ${personBlock("Agus","#3B82F6")}${personBlock("Coki","#10B981")}`;
+}
 
-  // Nota: Faltan las funciones renderFijos, renderVariable y renderResumen 
-  // pero siguen la misma lógica que tu código original con los ID actualizados.
-  // ... (Se mantienen las lógicas de renderizado de tablas y KPIs) ...
+function renderResumen(){
+  const saldo=disponible()-totalVar(),tv=totalVar();
+  const tva=totalVarPerson("Agus"),tvc=totalVarPerson("Coki");
+  const maxW=Math.max(...WEEKS.map(w=>weekTotal(w)),1);
+  const barCols=WEEKS.map(w=>{
+    const t=weekTotal(w),h=Math.max(Math.round((t/maxW)*70),4);
+    return `<div class="bar-col"><div class="bar-col-inner"><div class="bar-col-bar" style="height:${h}px"></div></div>
+    <div style="font-size:11px;color:#64748B;margin-top:3px">${w.replace("Semana","S.")}</div>
+    <div style="font-size:12px;font-weight:700">${fmt(t)}</div></div>`;
+  }).join("");
+  const personBars=[["Agus 💙",tva,"#3B82F6"],["Coki 💚",tvc,"#10B981"]].map(([lbl,val,color])=>`
+    <div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+        <span style="font-weight:600">${lbl}</span><span style="font-weight:700;color:${color}">${fmt(val)}</span>
+      </div>
+      <div class="bar-wrap"><div class="bar" style="width:${tv>0?(val/tv)*100:0}%;background:${color}"></div></div>
+    </div>`).join("");
+  const fixedDetail=(state.fixedList||[]).filter(k=>num((state.fixed||{})[k])>0).map(k=>`
+    <div class="row-between"><span style="color:#475569">${k}</span><span style="font-weight:600">${fmt(state.fixed[k])}</span></div>`).join("")
+    ||`<div style="color:#94A3B8;font-size:13px">Todavía no cargaste gastos fijos.</div>`;
+  return `<div class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">INGRESO TOTAL</div><div class="kpi-val" style="color:#10B981">${fmt(totalIncome())}</div></div>
+    <div class="kpi"><div class="kpi-label">GASTOS FIJOS</div><div class="kpi-val" style="color:#EF4444">${fmt(totalFixed())}</div></div>
+    <div class="kpi"><div class="kpi-label">GASTOS VARIABLES</div><div class="kpi-val" style="color:#F59E0B">${fmt(tv)}</div></div>
+    <div class="kpi"><div class="kpi-label">SALDO FINAL</div><div class="kpi-val" style="color:${saldo>=0?'#2563EB':'#EF4444'}">${fmt(saldo)}</div></div>
+  </div>
+  <div class="daily-box"><div class="lbl">PRESUPUESTO DIARIO</div><div class="val">${fmt(porDia())}<span style="font-size:14px;font-weight:400">/día</span></div></div>
+  <div class="card"><div class="card-title">Variables por persona</div>${personBars}</div>
+  <div class="card"><div class="card-title">Comparativo semanal</div><div class="bar-cols">${barCols}</div></div>
+  <div class="card"><div class="card-title">Detalle gastos fijos</div>${fixedDetail}</div>`;
+}
+
+showAuthOverlay(true);
+document.getElementById("sync-dot").className="sync-dot";
+document.getElementById("main-content").innerHTML='<div class="loading">⏳ Iniciá sesión para ver tus datos...</div>';
+
+onAuthStateChanged(auth, user=>{
+  if(user){
+    showAuthOverlay(false);
+    setAuthError("");
+    document.getElementById("main-content").innerHTML='<div class="loading">⏳ Cargando...</div>';
+    document.getElementById("sync-dot").className="sync-dot ok";
+    startDbListener();
+  } else {
+    stopDbListener();
+    showAuthOverlay(true);
+    setAuthError("");
+    document.getElementById("sync-dot").className="sync-dot";
+    document.getElementById("main-content").innerHTML='<div class="loading">⏳ Iniciá sesión para ver tus datos...</div>';
+  }
+});
 </script>
-
 </body>
 </html>
